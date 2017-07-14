@@ -1,6 +1,11 @@
 void runCourse()
 {
-  
+  LCD.clear(); LCD.home();
+  LCD.print("Tape Following");
+  while(digitalRead(49) == HIGH)
+  {
+    tapeFollow();
+  }
 }
 
 void tapeFollow()
