@@ -4,6 +4,8 @@ void runCourse()
   LCD.print("Tape Following");
   delay(1000);
   tapeFollow();
+  motor.speed(0,0);
+  motor.speed(1,0);
 }
 
 void tapeFollow()

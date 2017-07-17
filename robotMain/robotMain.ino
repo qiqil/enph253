@@ -8,9 +8,9 @@
 
 bool strategyIsSet = false;
 int course = 0; //0 = no course, 1 = right, 2 = left
-float kp = 0;
-float kd = 0;
-int threshold = 30;
+float kp = 30;
+float kd = 30;
+int threshold = 31;
 int gain = 1;
 int SPEED = 200;
 
