@@ -10,7 +10,7 @@ bool strategyIsSet = false;
 int course = 0; //0 = no course, 1 = right, 2 = left
 float kp = 30;
 float kd = 30;
-int threshold = 31;
+int threshold = 35;
 int gain = 1;
 int SPEED = 200;
 
