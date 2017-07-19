@@ -24,10 +24,25 @@ void tapeFollow()
     rightI=analogRead(4);
     rightO=analogRead(5);
 
-    if ((leftI>threshold)&&(rightI>threshold)) error = 0; //less then threshold means its off the tape (QRD senses, value of sensor voltage goes up)
+    if ((leftI>threshold)&&(rightI>threshold)) {
+      error = 0; 
+//      LCD.clear(); LCD.home();
+//      LCD.print("here"); 
+//      delay(1000);
+    } //less then threshold means its off the tape (QRD senses, value of sensor voltage goes up)
     
-    if ((leftI>threshold)&&(rightI<threshold)&&(leftO<threshold)) error = -1; 
-    if ((leftI<threshold)&&(rightI>threshold)&&(rightO<threshold)) error = +1;
+    if ((leftI>threshold)&&(rightI<threshold)&&(leftO<threshold)) {
+      error = -1; 
+//      LCD.clear(); LCD.home();
+//      LCD.print("here2"); 
+//      delay(1000);
+    }
+    if ((leftI<threshold)&&(rightI>threshold)&&(rightO<threshold)) {
+      error = +1; 
+//      LCD.clear(); LCD.home();
+//      LCD.print("here3"); 
+//      delay(1000);
+    }
 
     if ((leftI>threshold)&&(leftO>threshold)) error = -2;
     if ((rightI>threshold)&&(rightO>threshold)) error = +2;
@@ -67,10 +82,12 @@ void tapeFollow()
     if (count==30)
     {
       LCD.clear();LCD.home();
-      LCD.setCursor(0,0); LCD.print(rightI); 
-      LCD.setCursor(0,1); LCD.print(leftI);
-      LCD.setCursor(7,0); LCD.print(int(-SPEED + control)); //printing  FINAL SPEED OF RIGHT
-      LCD.setCursor(7,1); LCD.print(int(SPEED + control));  //PRINTING FINAL SPEED OF LEFT
+      LCD.setCursor(0,0); LCD.print(error); 
+      LCD.setCursor(0,1); LCD.print(lasterror);
+      LCD.setCursor(7,0); LCD.print(leftI);
+      LCD.setCursor(7,1); LCD.print(rightI);
+      //LCD.setCursor(7,0); LCD.print(int(-SPEED + control)); //printing  FINAL SPEED OF RIGHT
+      //LCD.setCursor(7,1); LCD.print(int(SPEED + control));  //PRINTING FINAL SPEED OF LEFT
       //LCD.setCursor(7,0); LCD.print((int)kp);
       //LCD.setCursor(7,1); LCD.print((int)kd);
       //LCD.setCursor(12,0); LCD.print(SPEED); //printing speed
