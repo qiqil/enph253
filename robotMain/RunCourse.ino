@@ -26,22 +26,13 @@ void tapeFollow()
 
     if ((leftI>threshold)&&(rightI>threshold)) {
       error = 0; 
-//      LCD.clear(); LCD.home();
-//      LCD.print("here"); 
-//      delay(1000);
     } //less then threshold means its off the tape (QRD senses, value of sensor voltage goes up)
     
     if ((leftI>threshold)&&(rightI<threshold)&&(leftO<threshold)) {
       error = -1; 
-//      LCD.clear(); LCD.home();
-//      LCD.print("here2"); 
-//      delay(1000);
     }
     if ((leftI<threshold)&&(rightI>threshold)&&(rightO<threshold)) {
       error = +1; 
-//      LCD.clear(); LCD.home();
-//      LCD.print("here3"); 
-//      delay(1000);
     }
 
     if ((leftI>threshold)&&(leftO>threshold)) error = -2;
@@ -55,6 +46,10 @@ void tapeFollow()
         if(lasterror>0) error =5;
         if(lasterror<=0) error =-5;
       }
+    }
+
+    if ((leftI>threshold)&&(rightI>threshold)&&(rightO>threshold)&&(leftO>threshold)) {
+      error = +100; //100 means stop
     }
 
    // if((leftO>threshold)&&(leftI>threshold)){
@@ -94,10 +89,17 @@ void tapeFollow()
       count=0;
     } 
     count=count+1;
-    
-    motor.speed(0, -SPEED + control); //right motor (looking at tina)
-    motor.speed(1, SPEED + control);  //left motor
-    lasterror=error;
+
+    if (error != 100) {
+      motor.speed(0, -SPEED + control); //right motor (looking at tina)
+      motor.speed(1, SPEED + control);  //left motor
+      lasterror=error;
+    }
+    else {
+      motor.speed(0, 0);
+      motor.speed(1, 0);
+      delay(5000);
+    }
   }
 }
 
