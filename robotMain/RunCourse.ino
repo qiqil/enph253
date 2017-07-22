@@ -30,25 +30,44 @@ void tapeFollow()
 
     if ((leftI > threshold) && (rightI > threshold)) {
       error = 0;
+      currentSPEED = SPEED;
+      
     } //less then threshold means its off the tape (QRD senses, value of sensor voltage goes up)
 
     if ((leftI > threshold) && (rightI < threshold) && (leftO < threshold)) {
       error = -1;
+      currentSPEED = SPEED;
     }
     if ((leftI < threshold) && (rightI > threshold) && (rightO < threshold)) {
       error = +1;
+      currentSPEED = SPEED;
     }
 
-    if ((leftI > threshold) && (leftO > threshold)) error = -2;
-    if ((rightI > threshold) && (rightO > threshold)) error = +2;
+    if ((leftI > threshold) && (leftO > threshold)){ 
+      error = -2;
+      currentSPEED = 0.7*SPEED;
+    }
+    
+    if ((rightI > threshold) && (rightO > threshold)){
+      error = +2;
+      currentSPEED = 0.7*SPEED;
+    }
+    
 
-    if ((leftO > threshold) && (leftI < threshold)) error = -3;
-    if ((rightI < threshold) && (rightO > threshold)) error = +3;
+    if ((leftO > threshold) && (leftI < threshold)){
+      error = -3;
+      currentSPEED = 0.55*SPEED;
+    }
+    if ((rightI < threshold) && (rightO > threshold)){
+      error = +3;
+      currentSPEED = 0.55*SPEED;
+    }
 
     if ((leftO < threshold) && (leftI < threshold)) {
       if ((rightI < threshold) && (rightO < threshold)) {
         if (lasterror > 0) error = 5;
         if (lasterror <= 0) error = -5;
+        currentSPEED = 0.8*SPEED;
       }
     }
 
@@ -96,24 +115,52 @@ void tapeFollow()
     count = count + 1;
 
     if (error != 100) {
-      motor.speed(0, -SPEED + control); //right motor (looking at tina)
-      motor.speed(1, SPEED + control);  //left motor
+      motor.speed(0, -currentSPEED + control); //right motor (looking at tina)
+      motor.speed(1, currentSPEED + control);  //left motor
       lasterror = error;
     }
+    //--------------------------------------------------------------------------------------------------------
     else {
-      if (markcount == 0) {
-        motor.speed(0, -SPEED + sharpLeftControl); //right motor (looking at tina)
-        motor.speed(1, SPEED + sharpLeftControl);  //left motor
+      if (markcount == -1) { //TODO CHANGE!!!!!!!!!!!!!!!!!!!!!!!!
+        motor.speed(0, -currentSPEED + sharpLeftControl); //right motor (looking at tina)
+        motor.speed(1, currentSPEED + sharpLeftControl);  //left motor
         delay(200);
       }
-      if (markcount > 0) {
+      if (markcount >= 0) { //TODO CHANGE!!!!!!!!
+        motor.speed(0, +200);
+        motor.speed(1, -200);
+        q = 1;
+        leftO = analogRead(0);
+        leftI = analogRead(1);
+        rightI = analogRead(4);
+        rightO = analogRead(5);
+        if ((leftI > threshold) && (rightI > threshold)) lasterror = 0;              
+        if ((leftI > threshold) && (rightI < threshold) && (leftO < threshold)) lasterror = -1;
+        if ((leftI < threshold) && (rightI > threshold) && (rightO < threshold)) lasterror = +1;
+        if ((leftI > threshold) && (leftO > threshold)) lasterror = -2;
+        if ((rightI > threshold) && (rightO > threshold)) lasterror = +2;        
+        if ((leftO > threshold) && (leftI < threshold)) lasterror = -3;
+        if ((rightI < threshold) && (rightO > threshold)) lasterror = +3;    
+        if ((leftO < threshold) && (leftI < threshold)) {
+          if ((rightI < threshold) && (rightO < threshold)) {
+            if (lasterror > 0) lasterror = 5;
+            if (lasterror <= 0) lasterror = -5;
+          }
+        }
+        delay(3000);
+        LCD.clear(); LCD.home(); 
+        LCD.print("mark -> ");
+        LCD.print(markcount);
+        LCD.setCursor(0, 1); 
+        LCD.print("le -> ");
+        LCD.print(lasterror);
         motor.speed(0, 0);
         motor.speed(1, 0);
-        LCD.clear(); LCD.home(); LCD.print(markcount);
-        delay(5000);
+        delay(4000);
       }
       markcount = markcount + 1;
     }
+    //--------------------------------------------------------------------------------------------------------
   }
 }
 
