@@ -49,6 +49,7 @@ void driveMenu()
     int buttonON = digitalRead(50);
     if(buttonON == LOW)
     {
+      while(buttonON == LOW){}
       if(select == 1)
       {
         kpMenu();
@@ -72,11 +73,11 @@ void driveMenu()
     }
     delay(150);
   }
+  while(digitalRead(49) == LOW){}
 }
 
 void kpMenu()
 {
-  delay(150);
   float value;
   while(digitalRead(49) == HIGH)
   {
@@ -94,11 +95,11 @@ void kpMenu()
     }
     delay(100);
   }
+  while(digitalRead(49) == LOW){}
 }
 
 void kdMenu()
 {
-  delay(150);
   float value;
   while(digitalRead(49) == HIGH)
   {
@@ -114,13 +115,13 @@ void kdMenu()
     {
       kd = value;
     }
-    delay(150);
+    delay(100);
   }
+  while(digitalRead(49) == LOW){}
 }
 
 void gainMenu()
 {
-  delay(150);
   float value;
   while(digitalRead(49) == HIGH)
   {
@@ -136,13 +137,13 @@ void gainMenu()
     {
       gain = value;
     }
-    delay(150);
+    delay(100);
   }
+  while(digitalRead(49) == LOW){}
 }
 
 void speedMenu()
 {
-  delay(150);
   float value;
   while(digitalRead(49) == HIGH)
   {
@@ -158,13 +159,13 @@ void speedMenu()
     {
       SPEED = value;
     }
-    delay(150);
+    delay(100);
   }
+  while(digitalRead(49) == LOW){}
 }
 
 void thresholdMenu()
 {
-  delay(150);
   float value;
   while(digitalRead(49) == HIGH)
   {
@@ -180,8 +181,9 @@ void thresholdMenu()
     {
       threshold = value;
     }
-    delay(150);
+    delay(100);
   }
+  while(digitalRead(49) == LOW){}
 }
 
 

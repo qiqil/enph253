@@ -14,6 +14,7 @@ int threshold = 40;
 int gain = 1;
 int SPEED = 200;
 int currentSPEED = SPEED;
+float rightSensorCorrection = 1;
 
 void setup()
 {

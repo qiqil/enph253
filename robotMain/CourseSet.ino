@@ -23,6 +23,7 @@ void courseSetMenu()
     delay(100);
     if(buttonON == LOW)
     {
+      while(buttonON == LOW){}
       if(select == 1)
       {
         course = 2;
@@ -33,6 +34,7 @@ void courseSetMenu()
       }
     }
   }
+  while(digitalRead(49) == LOW){}
 }
 
 void currentPrint()

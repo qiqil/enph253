@@ -8,6 +8,25 @@ void runCourse()
   motor.speed(1, 0);
 }
 
+void alignToZipline()
+{
+  float leftIR = analogRead(2); //if these are changed, must change in IRmenu as well
+  float rightIR = analogRead(3); //!!!!!!!!^^^^^^^^^^^!!!!!!!!!
+  float uncertainty = .1;
+  while(leftIR > rightIR*rightSensorCorrection + rightIR*rightSensorCorrection*uncertainty || leftIR > rightIR*rightSensorCorrection - rightIR*rightSensorCorrection*uncertainty)
+  {
+    if(leftIR > rightIR*rightSensorCorrection)
+    {
+      //speed left 
+    }
+    else {
+      //speed right
+    }
+  }
+  motor.speed(0, 0);
+  motor.speed(1, 0);
+}
+
 void tapeFollow()
 {
   int P, I, D, error, rightO, leftO, rightI, leftI, control;
@@ -75,15 +94,6 @@ void tapeFollow()
       error = +100; //100 means stop
     }
 
-
-    // if((leftO>threshold)&&(leftI>threshold)){
-    // if((rightI>threshold)&&(right)>threshold)){
-    //     timePassed=millis()- t_initial
-    //     setStrategy();
-    //   }
-    // }
-
-
     if (!(error == lasterror)) {
       recenterr = lasterror;
       q++;
@@ -109,7 +119,7 @@ void tapeFollow()
       //LCD.setCursor(7,1); LCD.print(int(SPEED + control));  //PRINTING FINAL SPEED OF LEFT
       //LCD.setCursor(7,0); LCD.print((int)kp);
       //LCD.setCursor(7,1); LCD.print((int)kd);
-      //LCD.setCursor(12,0); LCD.print(SPEED); //printing speed
+      //LCD.setCursor(12,0); LCD.print(SPEED);
       count = 0;
     }
     count = count + 1;
@@ -121,12 +131,12 @@ void tapeFollow()
     }
     //--------------------------------------------------------------------------------------------------------
     else {
-      if (markcount == -1) { //TODO CHANGE!!!!!!!!!!!!!!!!!!!!!!!!
+      if (markcount == 0) {
         motor.speed(0, -currentSPEED + sharpLeftControl); //right motor (looking at tina)
         motor.speed(1, currentSPEED + sharpLeftControl);  //left motor
         delay(200);
       }
-      if (markcount >= 0) { //TODO CHANGE!!!!!!!!
+      if (markcount > 0 && <= 6) {
         motor.speed(0, +200);
         motor.speed(1, -200);
         q = 1;
@@ -157,6 +167,15 @@ void tapeFollow()
         motor.speed(0, 0);
         motor.speed(1, 0);
         delay(4000);
+      }
+      if (markcount > 6 && markcount != 10)
+      {
+        motor.speed(0, -150);
+        motor.speed(1, +150);
+      }
+      if(markcount == 10)
+      {
+        alignToZipline();
       }
       markcount = markcount + 1;
     }
