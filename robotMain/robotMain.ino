@@ -15,6 +15,10 @@ int gain = 1;
 int SPEED = 200;
 int currentSPEED = SPEED;
 float rightSensorCorrection = 1;
+float rightTotal;
+float leftTotal;
+float lastIR;
+int pastGate = 0;
 
 void setup()
 {
