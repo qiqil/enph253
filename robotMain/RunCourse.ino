@@ -17,10 +17,12 @@ void alignToZipline()
   {
     if(leftIR > rightIR*rightSensorCorrection)
     {
-      //speed left 
+      motor.speed(0, 0); //turn left
+      motor.speed(1, 150);
     }
     else {
-      //speed right
+      motor.speed(0, -150); //turn right
+      motor.speed(1, 0);
     }
   }
   motor.speed(0, 0);
@@ -157,7 +159,7 @@ void tapeFollow()
             if (lasterror <= 0) lasterror = -5;
           }
         }
-        delay(3000);
+        delay(1000); //time reverse
         LCD.clear(); LCD.home(); 
         LCD.print("mark -> ");
         LCD.print(markcount);
@@ -166,14 +168,14 @@ void tapeFollow()
         LCD.print(lasterror);
         motor.speed(0, 0);
         motor.speed(1, 0);
-        delay(4000);
+        delay(4000); //do arm stuff here instead
       }
-      if (markcount > 6 && markcount != 10)
+      if (markcount > 6 && markcount != 10) //just skip over these marks
       {
         motor.speed(0, -150);
         motor.speed(1, +150);
       }
-      if(markcount == 10)
+      if(markcount == 10) //can change, this is the mark we go to before we go to the zipline
       {
         alignToZipline();
       }
