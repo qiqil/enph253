@@ -22,7 +22,7 @@ void mainMenu()
     int buttonON = digitalRead(50);
     if(buttonON == LOW)
     {
-      while(buttonON == LOW){}
+      while(digitalRead(50) == LOW){}
       if(select == 1)
       {
         runCourse();

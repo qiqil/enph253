@@ -133,12 +133,12 @@ void tapeFollow()
     }
     //--------------------------------------------------------------------------------------------------------
     else {
-      if (markcount == 0) {
-        motor.speed(0, -currentSPEED + sharpLeftControl); //right motor (looking at tina)
-        motor.speed(1, currentSPEED + sharpLeftControl);  //left motor
+      if (markcount == -1) { //!!!!!!!!!!!!!!!!!!!!
+        motor.speed(0, -currentSPEED + sharpRightControl); //right motor (looking at tina)
+        motor.speed(1, currentSPEED + sharpRightControl);  //left motor
         delay(200);
       }
-      if (markcount > 0 && <= 6) {
+      if (markcount >= 0 && markcount <= 6) { //!!!!!!!!!!!!!!!!!!!!
         motor.speed(0, +200);
         motor.speed(1, -200);
         q = 1;
@@ -159,7 +159,7 @@ void tapeFollow()
             if (lasterror <= 0) lasterror = -5;
           }
         }
-        delay(1000); //time reverse
+        delay(100); //time reverse
         LCD.clear(); LCD.home(); 
         LCD.print("mark -> ");
         LCD.print(markcount);

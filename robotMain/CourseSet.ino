@@ -23,7 +23,7 @@ void courseSetMenu()
     delay(100);
     if(buttonON == LOW)
     {
-      while(buttonON == LOW){}
+      while(digitalRead(50) == LOW){}
       if(select == 1)
       {
         course = 2;

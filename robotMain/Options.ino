@@ -41,7 +41,7 @@ void optionsMenu()
     int buttonON = digitalRead(50);
     if(buttonON == LOW)
     {
-      while(buttonON == LOW){}
+      while(digitalRead(50) == LOW){}
       if(subMenu == 1)
       {
         driveMenu();
