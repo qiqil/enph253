@@ -2,14 +2,14 @@ void irMenu()
 {
   float rightTotal = 0;
   float leftTotal = 0;
-  int maxCount = 10;
+  int maxCount = 20;
   while(digitalRead(49) == HIGH)
   {
     for(int count = 0; count<maxCount; count++)
     {
       rightTotal += analogRead(3);
       leftTotal += analogRead(2);
-      delay(10);
+      delay(2);
     }
     float rightIR = rightTotal/maxCount;
     float leftIR = leftTotal/maxCount; 
