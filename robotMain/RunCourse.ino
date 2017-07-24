@@ -13,9 +13,9 @@ void alignToZipline()
   float leftIR = analogRead(2); //if these are changed, must change in IRmenu as well
   float rightIR = analogRead(3); //!!!!!!!!^^^^^^^^^^^!!!!!!!!!
   float uncertainty = .1;
-  while(leftIR > rightIR*rightSensorCorrection + rightIR*rightSensorCorrection*uncertainty || leftIR > rightIR*rightSensorCorrection - rightIR*rightSensorCorrection*uncertainty)
+  while (leftIR > rightIR * rightSensorCorrection + rightIR * rightSensorCorrection * uncertainty || leftIR > rightIR * rightSensorCorrection - rightIR * rightSensorCorrection * uncertainty)
   {
-    if(leftIR > rightIR*rightSensorCorrection)
+    if (leftIR > rightIR * rightSensorCorrection)
     {
       motor.speed(0, 0); //turn left
       motor.speed(1, 150);
@@ -48,11 +48,11 @@ void tapeFollow()
     leftI = analogRead(1);
     rightI = analogRead(4);
     rightO = analogRead(5);
-
+    
     if ((leftI > threshold) && (rightI > threshold)) {
       error = 0;
       currentSPEED = SPEED;
-      
+
     } //less then threshold means its off the tape (QRD senses, value of sensor voltage goes up)
 
     if ((leftI > threshold) && (rightI < threshold) && (leftO < threshold)) {
@@ -64,31 +64,31 @@ void tapeFollow()
       currentSPEED = SPEED;
     }
 
-    if ((leftI > threshold) && (leftO > threshold)){ 
+    if ((leftI > threshold) && (leftO > threshold)) {
       error = -2;
-      currentSPEED = 0.7*SPEED;
+      currentSPEED = 0.7 * SPEED;
     }
-    
-    if ((rightI > threshold) && (rightO > threshold)){
-      error = +2;
-      currentSPEED = 0.7*SPEED;
-    }
-    
 
-    if ((leftO > threshold) && (leftI < threshold)){
-      error = -3;
-      currentSPEED = 0.55*SPEED;
+    if ((rightI > threshold) && (rightO > threshold)) {
+      error = +2;
+      currentSPEED = 0.7 * SPEED;
     }
-    if ((rightI < threshold) && (rightO > threshold)){
+
+
+    if ((leftO > threshold) && (leftI < threshold)) {
+      error = -3;
+      currentSPEED = 0.55 * SPEED;
+    }
+    if ((rightI < threshold) && (rightO > threshold)) {
       error = +3;
-      currentSPEED = 0.55*SPEED;
+      currentSPEED = 0.55 * SPEED;
     }
 
     if ((leftO < threshold) && (leftI < threshold)) {
       if ((rightI < threshold) && (rightO < threshold)) {
         if (lasterror > 0) error = 5;
         if (lasterror <= 0) error = -5;
-        currentSPEED = 0.8*SPEED;
+        currentSPEED = 0.8 * SPEED;
       }
     }
 
@@ -146,13 +146,13 @@ void tapeFollow()
         leftI = analogRead(1);
         rightI = analogRead(4);
         rightO = analogRead(5);
-        if ((leftI > threshold) && (rightI > threshold)) lasterror = 0;              
+        if ((leftI > threshold) && (rightI > threshold)) lasterror = 0;
         if ((leftI > threshold) && (rightI < threshold) && (leftO < threshold)) lasterror = -1;
         if ((leftI < threshold) && (rightI > threshold) && (rightO < threshold)) lasterror = +1;
         if ((leftI > threshold) && (leftO > threshold)) lasterror = -2;
-        if ((rightI > threshold) && (rightO > threshold)) lasterror = +2;        
+        if ((rightI > threshold) && (rightO > threshold)) lasterror = +2;
         if ((leftO > threshold) && (leftI < threshold)) lasterror = -3;
-        if ((rightI < threshold) && (rightO > threshold)) lasterror = +3;    
+        if ((rightI < threshold) && (rightO > threshold)) lasterror = +3;
         if ((leftO < threshold) && (leftI < threshold)) {
           if ((rightI < threshold) && (rightO < threshold)) {
             if (lasterror > 0) lasterror = 5;
@@ -160,10 +160,10 @@ void tapeFollow()
           }
         }
         delay(100); //time reverse
-        LCD.clear(); LCD.home(); 
+        LCD.clear(); LCD.home();
         LCD.print("mark -> ");
         LCD.print(markcount);
-        LCD.setCursor(0, 1); 
+        LCD.setCursor(0, 1);
         LCD.print("le -> ");
         LCD.print(lasterror);
         motor.speed(0, 0);
@@ -175,13 +175,62 @@ void tapeFollow()
         motor.speed(0, -150);
         motor.speed(1, +150);
       }
-      if(markcount == 10) //can change, this is the mark we go to before we go to the zipline
+      if (markcount == 10) //can change, this is the mark we go to before we go to the zipline
       {
         alignToZipline();
       }
       markcount = markcount + 1;
     }
     //--------------------------------------------------------------------------------------------------------
+  }
+    if(pastGate == 0)
+      gateCheck();
+}
+
+float Sensor1Total = 0;
+float Sensor10Total = 0;
+int maxCount = 20;
+int tenkhzThresh = 350; //change
+int onekhzThresh = 300; //change
+int switchCount = 0;
+int variationThresh = 50;
+float lastIRSensor1;
+float lastIRSensor10;
+
+void gateCheck() {
+  Sensor1Total = 0;
+  Sensor10Total = 0;
+  switchCount = 0;
+
+  for (int count = 0; count < maxCount; count++)
+  {
+    Sensor1Total += analogRead(3);
+    Sensor10Total += analogRead(2);
+    delay(2);
+  }
+  float irSensor1 = Sensor1Total / maxCount;
+  float irSensor10 = Sensor10Total / maxCount;
+
+  if ( ( irSensor10 > tenkhzThresh ) || (irSensor1 > onekhzThresh) ) {
+    motor.speed(0, 0);
+    motor.speed(1, 0);
+    lastIRSensor1 = irSensor1;
+    lastIRSensor10 = irSensor10;
+
+    if ( irSensor10 > tenkhzThresh && irSensor1 < onekhzThresh) {
+      while ( switchCount < 2 ) {
+            if ( abs(lastIRSensor10 - analogRead(2)) > variationThresh && abs(lastIRSensor1 - analogRead(3)) > variationThresh )
+                 switchCount ++;
+            }
+          }
+
+    if ( irSensor10 < tenkhzThresh && irSensor1 > onekhzThresh) {
+      while (switchCount < 1) {
+            if (abs(lastIRSensor10 - analogRead(2)) > variationThresh) && abs(lastIRSensor1 - analogRead(3)) > variationThresh )
+              switchCount ++;
+            }
+          } 
+   pastGate = 1;
   }
 }
 
