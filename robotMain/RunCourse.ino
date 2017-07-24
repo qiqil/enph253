@@ -222,9 +222,16 @@ void gateCheck() {
       while ( switchCount < 2 ) {
         if ( abs(lastIRSensor10 - analogRead(2)) > variationThresh && abs(lastIRSensor1 - analogRead(3)) > variationThresh ) {
              switchCount ++;
-        }
-      }
-    }
+             Sensor10Total = 0;
+             
+             for ( count = 0; count < maxCount; count++){
+              Sensor10Total +=analogRead(2);
+              delay(2); 
+          }
+         lastIRSensor10 = Sensor10Total / maxCount;
+       }
+     }
+   }
 
     if ( irSensor10 < tenkhzThresh && irSensor1 > onekhzThresh) {
       while (switchCount < 1) {
@@ -236,4 +243,5 @@ void gateCheck() {
    pastGate = 1;
   }
 }
+
 
