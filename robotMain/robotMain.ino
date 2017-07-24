@@ -22,13 +22,25 @@ int pastGate = 0;
 
 void setup()
 {
-    #include <phys253setup.txt>
-    Serial.begin(9600);  
+  portMode(0, INPUT) ;      //   ***** from 253 template file
+  portMode(1, OUTPUT) ;      //   ***** from 253 template file
+  
+  LCD.begin(16,2) ;
+
+  for (int i = 0; i <6; i++)
+  {
+    servos[i].attach(i+8);
+  }    
+  Serial.begin(9600);  
 }
  
 void loop()
 { 
   mainMenu();
+//  for (int i = 0; i <6; i++)
+//  {
+//    servos[i].write(90);
+//  }
 //  
 //  LCD.clear(); LCD.home();
 //  double voltage = analogRead(7);

@@ -182,9 +182,10 @@ void tapeFollow()
       markcount = markcount + 1;
     }
     //--------------------------------------------------------------------------------------------------------
-  }
-    if(pastGate == 0)
+    if(pastGate == 0) {
       gateCheck();
+    }
+  }
 }
 
 float Sensor1Total = 0;
@@ -219,17 +220,19 @@ void gateCheck() {
 
     if ( irSensor10 > tenkhzThresh && irSensor1 < onekhzThresh) {
       while ( switchCount < 2 ) {
-            if ( abs(lastIRSensor10 - analogRead(2)) > variationThresh && abs(lastIRSensor1 - analogRead(3)) > variationThresh )
-                 switchCount ++;
-            }
-          }
+        if ( abs(lastIRSensor10 - analogRead(2)) > variationThresh && abs(lastIRSensor1 - analogRead(3)) > variationThresh ) {
+             switchCount ++;
+        }
+      }
+    }
 
     if ( irSensor10 < tenkhzThresh && irSensor1 > onekhzThresh) {
       while (switchCount < 1) {
-            if (abs(lastIRSensor10 - analogRead(2)) > variationThresh) && abs(lastIRSensor1 - analogRead(3)) > variationThresh )
-              switchCount ++;
-            }
-          } 
+        if (abs(lastIRSensor10 - analogRead(2)) > variationThresh) && abs(lastIRSensor1 - analogRead(3)) > variationThresh ) {
+          switchCount ++;
+        }
+      }
+    } 
    pastGate = 1;
   }
 }
