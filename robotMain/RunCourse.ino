@@ -197,13 +197,15 @@ int switchCount = 0;
 int variationThresh = 50;
 float lastIRSensor1;
 float lastIRSensor10;
+float possibleChange1;
+float possibleChange10;
 
 void gateCheck() {
   Sensor1Total = 0;
   Sensor10Total = 0;
   switchCount = 0;
 
-  for (int count = 0; count < maxCount; count++)
+  for (int counter = 0; counter < maxCount; counter++)
   {
     Sensor1Total += analogRead(3);
     Sensor10Total += analogRead(2);
@@ -220,11 +222,13 @@ void gateCheck() {
 
     if ( irSensor10 > tenkhzThresh && irSensor1 < onekhzThresh) {
       while ( switchCount < 2 ) {
-        if ( abs(lastIRSensor10 - analogRead(2)) > variationThresh && abs(lastIRSensor1 - analogRead(3)) > variationThresh ) {
+        possibleChange10 = lastIRSensor10 - analogRead(2);
+        possibleChange1 = lastIRSensor1 - analogRead(3);
+        if ( abs(possibleChange10) > variationThresh && abs(possibleChange1) > variationThresh ) {
              switchCount ++;
              Sensor10Total = 0;
              
-             for ( count = 0; count < maxCount; count++){
+             for ( int counter = 0; counter < maxCount; counter++){
               Sensor10Total +=analogRead(2);
               delay(2); 
           }
@@ -235,7 +239,9 @@ void gateCheck() {
 
     if ( irSensor10 < tenkhzThresh && irSensor1 > onekhzThresh) {
       while (switchCount < 1) {
-        if (abs(lastIRSensor10 - analogRead(2)) > variationThresh) && abs(lastIRSensor1 - analogRead(3)) > variationThresh ) {
+        possibleChange10 = lastIRSensor10 - analogRead(2);
+        possibleChange1 = lastIRSensor1 - analogRead(3);
+        if (abs(possibleChange10) > variationThresh && abs(possibleChange10) > variationThresh ) {
           switchCount ++;
         }
       }
