@@ -251,6 +251,9 @@ void driveToZipline() {
       break;
     }
   }
+  motor.speed(0,0);
+  motor.speed(0,1);
+}
 
 void pickUpAgentOne() {
   //lower claw to medium position
