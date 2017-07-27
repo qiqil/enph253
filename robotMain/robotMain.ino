@@ -19,6 +19,7 @@ float rightTotal;
 float leftTotal;
 float lastIR;
 int pastGate = 0;
+ServoTINAH servos[6];
 
 void setup()
 {

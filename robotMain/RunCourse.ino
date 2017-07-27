@@ -8,26 +8,26 @@ void runCourse()
   motor.speed(1, 0);
 }
 
-void alignToZipline()
-{
-  float leftIR = analogRead(2); //if these are changed, must change in IRmenu as well
-  float rightIR = analogRead(3); //!!!!!!!!^^^^^^^^^^^!!!!!!!!!
-  float uncertainty = .1;
-  while (leftIR > rightIR * rightSensorCorrection + rightIR * rightSensorCorrection * uncertainty || leftIR > rightIR * rightSensorCorrection - rightIR * rightSensorCorrection * uncertainty)
-  {
-    if (leftIR > rightIR * rightSensorCorrection)
-    {
-      motor.speed(0, 0); //turn left
-      motor.speed(1, 150);
-    }
-    else {
-      motor.speed(0, -150); //turn right
-      motor.speed(1, 0);
-    }
-  }
-  motor.speed(0, 0);
-  motor.speed(1, 0);
-}
+//void alignToZipline()
+//{
+//  float leftIR = analogRead(2); //if these are changed, must change in IRmenu as well
+//  float rightIR = analogRead(3); //!!!!!!!!^^^^^^^^^^^!!!!!!!!!
+//  float uncertainty = .1;
+//  while (leftIR > rightIR * rightSensorCorrection + rightIR * rightSensorCorrection * uncertainty || leftIR > rightIR * rightSensorCorrection - rightIR * rightSensorCorrection * uncertainty)
+//  {
+//    if (leftIR > rightIR * rightSensorCorrection)
+//    {
+//      motor.speed(0, 0); //turn left
+//      motor.speed(1, 150);
+//    }
+//    else {
+//      motor.speed(0, -150); //turn right
+//      motor.speed(1, 0);
+//    }
+//  }
+//  motor.speed(0, 0);
+//  motor.speed(1, 0);
+//}
 
 void tapeFollow()
 {
@@ -44,10 +44,10 @@ void tapeFollow()
   while (digitalRead(49) == HIGH)
   {
     ki = 0;
-    leftO = analogRead(0);
-    leftI = analogRead(1);
-    rightI = analogRead(4);
-    rightO = analogRead(5);
+    leftO = analogRead(3);
+    leftI = analogRead(2);
+    rightI = analogRead(1);
+    rightO = analogRead(0);
     
     if ((leftI > threshold) && (rightI > threshold)) {
       error = 0;
@@ -113,10 +113,15 @@ void tapeFollow()
     if (count == 30)
     {
       LCD.clear(); LCD.home();
-      LCD.setCursor(0, 0); LCD.print(control);
-      LCD.setCursor(0, 1); LCD.print(lasterror);
-      LCD.setCursor(7, 0); LCD.print(leftI);
-      LCD.setCursor(7, 1); LCD.print(rightI);
+      LCD.print("LO ");
+      LCD.setCursor(0, 0); LCD.print(leftO);
+      LCD.print(" LI ");
+      LCD.print(leftI);
+      LCD.setCursor(1, 0); 
+      LCD.print("RO ");
+      LCD.print(rightO);
+      LCD.print(" RI ");
+      LCD.print(rightI);
       //LCD.setCursor(7,0); LCD.print(int(-SPEED + control)); //printing  FINAL SPEED OF RIGHT
       //LCD.setCursor(7,1); LCD.print(int(SPEED + control));  //PRINTING FINAL SPEED OF LEFT
       //LCD.setCursor(7,0); LCD.print((int)kp);
@@ -142,10 +147,10 @@ void tapeFollow()
         motor.speed(0, +200);
         motor.speed(1, -200);
         q = 1;
-        leftO = analogRead(0);
-        leftI = analogRead(1);
-        rightI = analogRead(4);
-        rightO = analogRead(5);
+        leftO = analogRead(3);
+        leftI = analogRead(2);
+        rightI = analogRead(1);
+        rightO = analogRead(0);
         if ((leftI > threshold) && (rightI > threshold)) lasterror = 0;
         if ((leftI > threshold) && (rightI < threshold) && (leftO < threshold)) lasterror = -1;
         if ((leftI < threshold) && (rightI > threshold) && (rightO < threshold)) lasterror = +1;
@@ -177,13 +182,13 @@ void tapeFollow()
       }
       if (markcount == 10) //can change, this is the mark we go to before we go to the zipline
       {
-        alignToZipline();
+        // alignToZipline();
       }
       markcount = markcount + 1;
     }
     //--------------------------------------------------------------------------------------------------------
     if(pastGate == 0) {
-      gateCheck();
+      //gateCheck();
     }
   }
 }
@@ -207,8 +212,8 @@ void gateCheck() {
 
   for (int counter = 0; counter < maxCount; counter++)
   {
-    Sensor1Total += analogRead(3);
-    Sensor10Total += analogRead(2);
+    Sensor1Total += analogRead(4);
+    Sensor10Total += analogRead(5);
     delay(2);
   }
   float irSensor1 = Sensor1Total / maxCount;
@@ -222,14 +227,14 @@ void gateCheck() {
 
     if ( irSensor10 > tenkhzThresh && irSensor1 < onekhzThresh) {
       while ( switchCount < 2 ) {
-        possibleChange10 = lastIRSensor10 - analogRead(2);
-        possibleChange1 = lastIRSensor1 - analogRead(3);
+        possibleChange10 = lastIRSensor10 - analogRead(4);
+        possibleChange1 = lastIRSensor1 - analogRead(5);
         if ( abs(possibleChange10) > variationThresh && abs(possibleChange1) > variationThresh ) {
              switchCount ++;
              Sensor10Total = 0;
              
              for ( int counter = 0; counter < maxCount; counter++){
-              Sensor10Total +=analogRead(2);
+              Sensor10Total +=analogRead(4);
               delay(2); 
           }
          lastIRSensor10 = Sensor10Total / maxCount;
@@ -239,8 +244,8 @@ void gateCheck() {
 
     if ( irSensor10 < tenkhzThresh && irSensor1 > onekhzThresh) {
       while (switchCount < 1) {
-        possibleChange10 = lastIRSensor10 - analogRead(2);
-        possibleChange1 = lastIRSensor1 - analogRead(3);
+        possibleChange10 = lastIRSensor10 - analogRead(4);
+        possibleChange1 = lastIRSensor1 - analogRead(5);
         if (abs(possibleChange10) > variationThresh && abs(possibleChange10) > variationThresh ) {
           switchCount ++;
         }
