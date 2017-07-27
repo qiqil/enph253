@@ -1,5 +1,11 @@
+float tenkhzThresh = 50; //change
+float onekhzThresh = 110; //change
+float irSensor1 = 0;
+float irSensor10 = 0;
+
 void runCourse()
 {
+  pastGate = 0;
   LCD.clear(); LCD.home();
   LCD.print("Tape Following");
   delay(1000);
@@ -113,13 +119,10 @@ void tapeFollow()
     if (count == 30)
     {
       LCD.clear(); LCD.home();
-      LCD.print("LO ");
-      LCD.setCursor(0, 0); LCD.print(leftO);
+      LCD.setCursor(0, 0); 
       LCD.print(" LI ");
       LCD.print(leftI);
-      LCD.setCursor(1, 0); 
-      LCD.print("RO ");
-      LCD.print(rightO);
+      LCD.setCursor(0, 1); 
       LCD.print(" RI ");
       LCD.print(rightI);
       //LCD.setCursor(7,0); LCD.print(int(-SPEED + control)); //printing  FINAL SPEED OF RIGHT
@@ -138,12 +141,20 @@ void tapeFollow()
     }
     //--------------------------------------------------------------------------------------------------------
     else {
-      if (markcount == -1) { //!!!!!!!!!!!!!!!!!!!!
-        motor.speed(0, -currentSPEED + sharpRightControl); //right motor (looking at tina)
-        motor.speed(1, currentSPEED + sharpRightControl);  //left motor
+      if (markcount == 0) { //!!!!!!!!!!!!!!!!!!!!
+        if(course == 1 || course == 0)
+        {
+          motor.speed(0, -currentSPEED + sharpRightControl); //right motor (looking at tina)
+          motor.speed(1, currentSPEED + sharpRightControl);  //left motor
+        }
+        else
+        {
+          motor.speed(0, -currentSPEED + sharpLeftControl); //right motor (looking at tina)
+          motor.speed(1, currentSPEED + sharpLeftControl);  //left motor
+        }
         delay(200);
       }
-      if (markcount >= 0 && markcount <= 6) { //!!!!!!!!!!!!!!!!!!!!
+      if (markcount > 0 && markcount <= 6) { //!!!!!!!!!!!!!!!!!!!!
         motor.speed(0, +200);
         motor.speed(1, -200);
         q = 1;
@@ -173,7 +184,12 @@ void tapeFollow()
         LCD.print(lasterror);
         motor.speed(0, 0);
         motor.speed(1, 0);
-        delay(4000); //do arm stuff here instead
+        if (markcount == 1) pickUpAgentOne();
+        if (markcount == 2) pickUpAgentTwo();
+        if (markcount == 3) pickUpAgentThree();
+        if (markcount == 4) pickUpAgentFour();
+        if (markcount == 5) pickUpAgentFive();
+        if (markcount == 6) pickUpAgentSix();
       }
       if (markcount > 6 && markcount != 10) //just skip over these marks
       {
@@ -193,87 +209,58 @@ void tapeFollow()
   }
 }
 
-float Sensor1Total = 0;
-float Sensor10Total = 0;
-int maxCount = 20;
-int tenkhzThresh = 5; //change
-int onekhzThresh = 5; //change
-int switchCount = 0;
-int variationThresh = 10;
-float lastIRSensor1;
-float lastIRSensor10;
-float possibleChange1;
-float possibleChange10;
-float irSensor1;
-float irSensor10;
-
 void gateCheck() {
-  Sensor1Total = 0;
-  Sensor10Total = 0;
-  switchCount = 0;
-
-  for (int counter = 0; counter < maxCount; counter++)
-  {
-    Sensor1Total += analogRead(4);
-    Sensor10Total += analogRead(5);
-    delay(2);
-  }
-  irSensor1 = Sensor1Total / maxCount;
-  irSensor10 = Sensor10Total / maxCount;
+  irSensor1 = analogRead(4);
+  irSensor10 = analogRead(5);
 
   if ( ( irSensor10 > tenkhzThresh ) || (irSensor1 > onekhzThresh) ) {
+
+    LCD.clear(); LCD.home();
+    LCD.print("1K ");
+    LCD.setCursor(0, 0); 
+    LCD.print(irSensor1);
+    LCD.setCursor(0, 1); 
+    LCD.print("10K ");
+    LCD.print(irSensor10);    
     motor.speed(0, 0);
     motor.speed(1, 0);
-    lastIRSensor1 = irSensor1;
-    lastIRSensor10 = irSensor10;
+    //delay(2000);
 
     if ( irSensor10 > tenkhzThresh && irSensor1 < onekhzThresh) {
-      while ( switchCount < 1 ) {
-        Sensor1Total = 0;
-        Sensor10Total = 0;
-        for ( int counter = 0; counter < maxCount; counter++)
-        {
-          Sensor1Total += analogRead(4);
-          Sensor10Total +=analogRead(5);
-          delay(2); 
-         }
-         irSensor1 = Sensor1Total / maxCount;
-         irSensor10 = Sensor10Total / maxCount;
-         possibleChange10 = lastIRSensor10 - irSensor10;
-         possibleChange1 = lastIRSensor1 - irSensor1;
-         if ( abs(possibleChange10) > variationThresh && abs(possibleChange1) > variationThresh ) 
-         {
-          switchCount ++;
-         }
-         lastIRSensor1 = irSensor1;
-         lastIRSensor10 = irSensor10;
-      }
+      while(analogRead(4) < onekhzThresh && analogRead(5) > tenkhzThresh){}
+      pastGate++;
    }
 
-    if ( irSensor10 < tenkhzThresh && irSensor1 > onekhzThresh) {
-      while ( switchCount < 2 ) {
-        Sensor1Total = 0;
-        Sensor10Total = 0;
-        for ( int counter = 0; counter < maxCount; counter++)
-        {
-          Sensor1Total += analogRead(4);
-          Sensor10Total +=analogRead(5);
-          delay(2); 
-         }
-         irSensor1 = Sensor1Total / maxCount;
-         irSensor10 = Sensor10Total / maxCount;
-         possibleChange10 = lastIRSensor10 - irSensor10;
-         possibleChange1 = lastIRSensor1 - irSensor1;
-         if ( abs(possibleChange10) > variationThresh && abs(possibleChange1) > variationThresh ) 
-         {
-          switchCount ++;
-         }
-         lastIRSensor1 = irSensor1;
-         lastIRSensor10 = irSensor10;
-      }
+    if ( irSensor10 < tenkhzThresh && irSensor1 > onekhzThresh && pastGate == 0) {
+      while(analogRead(4) > onekhzThresh && analogRead(5) < tenkhzThresh){}
+      while(analogRead(4) < onekhzThresh && analogRead(5) > tenkhzThresh){}
+      pastGate++;
     } 
-   pastGate++;
   }
+}
+
+void pickUpAgentOne() {
+  //lower claw to medium position
+}
+
+void pickUpAgentTwo() {
+  //lower claw to lowest position
+}
+
+void pickUpAgentThree() {
+  //lower claw to highest position
+}
+
+void pickUpAgentFour() {
+  //lower claw to medium position
+}
+
+void pickUpAgentFive() {
+  //lower claw to lowest position
+}
+
+void pickUpAgentSix() {
+  //lower claw to highest position
 }
 
 

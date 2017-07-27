@@ -8,16 +8,13 @@
 
 bool strategyIsSet = false;
 int course = 0; //0 = no course, 1 = right, 2 = left
-float kp = 40;
-float kd = 50;
+float kp = 8; //40
+float kd = 10; //50
 int threshold = 40;
 int gain = 1;
-int SPEED = 200;
+int SPEED = 130; //200
 int currentSPEED = SPEED;
 float rightSensorCorrection = 1;
-float rightTotal;
-float leftTotal;
-float lastIR;
 int pastGate = 0;
 ServoTINAH servos[6];
 
