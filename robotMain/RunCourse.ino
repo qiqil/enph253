@@ -188,7 +188,7 @@ void tapeFollow()
     }
     //--------------------------------------------------------------------------------------------------------
     if(pastGate == 0) {
-      //gateCheck();
+      gateCheck();
     }
   }
 }
@@ -196,14 +196,16 @@ void tapeFollow()
 float Sensor1Total = 0;
 float Sensor10Total = 0;
 int maxCount = 20;
-int tenkhzThresh = 350; //change
-int onekhzThresh = 300; //change
+int tenkhzThresh = 5; //change
+int onekhzThresh = 5; //change
 int switchCount = 0;
-int variationThresh = 50;
+int variationThresh = 10;
 float lastIRSensor1;
 float lastIRSensor10;
 float possibleChange1;
 float possibleChange10;
+float irSensor1;
+float irSensor10;
 
 void gateCheck() {
   Sensor1Total = 0;
@@ -216,8 +218,8 @@ void gateCheck() {
     Sensor10Total += analogRead(5);
     delay(2);
   }
-  float irSensor1 = Sensor1Total / maxCount;
-  float irSensor10 = Sensor10Total / maxCount;
+  irSensor1 = Sensor1Total / maxCount;
+  irSensor10 = Sensor10Total / maxCount;
 
   if ( ( irSensor10 > tenkhzThresh ) || (irSensor1 > onekhzThresh) ) {
     motor.speed(0, 0);
@@ -226,32 +228,51 @@ void gateCheck() {
     lastIRSensor10 = irSensor10;
 
     if ( irSensor10 > tenkhzThresh && irSensor1 < onekhzThresh) {
-      while ( switchCount < 2 ) {
-        possibleChange10 = lastIRSensor10 - analogRead(4);
-        possibleChange1 = lastIRSensor1 - analogRead(5);
-        if ( abs(possibleChange10) > variationThresh && abs(possibleChange1) > variationThresh ) {
-             switchCount ++;
-             Sensor10Total = 0;
-             
-             for ( int counter = 0; counter < maxCount; counter++){
-              Sensor10Total +=analogRead(4);
-              delay(2); 
-          }
-         lastIRSensor10 = Sensor10Total / maxCount;
-       }
-     }
+      while ( switchCount < 1 ) {
+        Sensor1Total = 0;
+        Sensor10Total = 0;
+        for ( int counter = 0; counter < maxCount; counter++)
+        {
+          Sensor1Total += analogRead(4);
+          Sensor10Total +=analogRead(5);
+          delay(2); 
+         }
+         irSensor1 = Sensor1Total / maxCount;
+         irSensor10 = Sensor10Total / maxCount;
+         possibleChange10 = lastIRSensor10 - irSensor10;
+         possibleChange1 = lastIRSensor1 - irSensor1;
+         if ( abs(possibleChange10) > variationThresh && abs(possibleChange1) > variationThresh ) 
+         {
+          switchCount ++;
+         }
+         lastIRSensor1 = irSensor1;
+         lastIRSensor10 = irSensor10;
+      }
    }
 
     if ( irSensor10 < tenkhzThresh && irSensor1 > onekhzThresh) {
-      while (switchCount < 1) {
-        possibleChange10 = lastIRSensor10 - analogRead(4);
-        possibleChange1 = lastIRSensor1 - analogRead(5);
-        if (abs(possibleChange10) > variationThresh && abs(possibleChange10) > variationThresh ) {
+      while ( switchCount < 2 ) {
+        Sensor1Total = 0;
+        Sensor10Total = 0;
+        for ( int counter = 0; counter < maxCount; counter++)
+        {
+          Sensor1Total += analogRead(4);
+          Sensor10Total +=analogRead(5);
+          delay(2); 
+         }
+         irSensor1 = Sensor1Total / maxCount;
+         irSensor10 = Sensor10Total / maxCount;
+         possibleChange10 = lastIRSensor10 - irSensor10;
+         possibleChange1 = lastIRSensor1 - irSensor1;
+         if ( abs(possibleChange10) > variationThresh && abs(possibleChange1) > variationThresh ) 
+         {
           switchCount ++;
-        }
+         }
+         lastIRSensor1 = irSensor1;
+         lastIRSensor10 = irSensor10;
       }
     } 
-   pastGate = 1;
+   pastGate++;
   }
 }
 
