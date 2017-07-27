@@ -198,7 +198,7 @@ void tapeFollow()
       }
       if (markcount == 10) //can change, this is the mark we go to before we go to the zipline
       {
-        // alignToZipline();
+        driveToZipline();
       }
       markcount = markcount + 1;
     }
@@ -238,6 +238,19 @@ void gateCheck() {
     } 
   }
 }
+
+void driveToZipline() {
+  int inputButton =1; //change
+  float timeStart = millis();
+  float timeDrive = 2500;
+
+  while( (millis() - timeStart) < timeDrive ) {
+    motor.speed(0, -0.5*SPEED);
+    motor.speed(0, 0.5*SPEED);
+    if( digitalRead(inputButton) == HIGH ){
+      break;
+    }
+  }
 
 void pickUpAgentOne() {
   //lower claw to medium position
