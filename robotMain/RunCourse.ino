@@ -1,3 +1,7 @@
+// servo0, servo1 - backarm
+// servo2 -forearm - 180pointing towards chassis
+// motor2 - end effector - 1.8sec to close, when close give it small speed to keep it closed
+// digital pin - base - 0 = pointing left facing TINAH
 float irSensor1 = 0;
 float irSensor10 = 0;
 int timeStart;

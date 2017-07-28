@@ -20,7 +20,7 @@ void pickUpAgentOne() {
     baseServo.write(180);
   }
   delay(300);
-  int backarmAngle = 150; //0 degrees = pointing straight up
+  backarmAngle = 150; //0 degrees = pointing straight up
   int forearmAngle = 80;
   for (int angle = 0; angle <= backarmAngle; angle++)
   {
