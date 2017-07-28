@@ -13,12 +13,12 @@ float kp = 20; //30
 float kd = 35; //40
 int threshold = 60;
 int gain = 1;
-int SPEED = 120; //200
+int SPEED = 160; //200
 int currentSPEED = SPEED;
 float rightSensorCorrection = 1;
 int pastGate = 0;
-float tenkhzThresh = 20; //change
-float onekhzThresh = 10; //change
+float tenkhzThresh = 10; //change
+float onekhzThresh = 20; //change
 ServoTINAH baseServo;
 
 void setup()
@@ -30,13 +30,21 @@ void setup()
   RCServo0.attach(RCServo0Output) ;    // attaching the digital inputs to the RC servo pins on the board.  
   RCServo1.attach(RCServo1Output) ;
   RCServo2.attach(RCServo2Output) ;
-  baseServo.attach(8);   
+  baseServo.attach(8);
+  RCServo2.write(0);
+  RCServo0.write(0);
+  baseServo.write(180);
+  RCServo1.write(180);
+  delay(500);
+  baseServo.write(0);  
+  
   Serial.begin(9600);  
 }
  
 void loop()
 { 
   //pickUpAgentOne();
+ 
   mainMenu();
 //  for (int i = 0; i <6; i++)
 //  {

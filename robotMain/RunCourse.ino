@@ -8,13 +8,12 @@ void runCourse()
   pastGate = 0;
   LCD.clear(); LCD.home();
   LCD.print("Tape Following");
+  RCServo2.write(0);
+  baseServo.write(80);
+  delay(300);
   RCServo0.write(110);
   RCServo1.write(180-110);
-  RCServo2.write(0);
-  //delay(300);
-  baseServo.write(80);
-  delay(1000);
-  //add code so no wheelies?  
+  delay(1000); 
   timeStart = millis();
   tapeFollow();
   motor.speed(0, 0);
@@ -58,8 +57,8 @@ void tapeFollow()
   {
     if (millis() - timeStart > 1800 && adjustForGate == 0)
     {
-      RCServo0.write(115);
-      RCServo1.write(180-115);
+      RCServo0.write(130);
+      RCServo1.write(180-130);
       adjustForGate++;
     }
     if(pastGate == 0) {
@@ -88,22 +87,22 @@ void tapeFollow()
 
     if ((leftI > threshold) && (leftO > threshold)) {
       error = -2;
-      currentSPEED = 0.7 * SPEED;
+      currentSPEED = 0.8 * SPEED;
     }
 
     if ((rightI > threshold) && (rightO > threshold)) {
       error = +2;
-      currentSPEED = 0.7 * SPEED;
+      currentSPEED = 0.8 * SPEED;
     }
 
 
     if ((leftO > threshold) && (leftI < threshold)) {
       error = -3;
-      currentSPEED = 0.55 * SPEED;
+      currentSPEED = 0.65 * SPEED;
     }
     if ((rightI < threshold) && (rightO > threshold)) {
       error = +3;
-      currentSPEED = 0.55 * SPEED;
+      currentSPEED = 0.65 * SPEED;
     }
 
     if ((leftO < threshold) && (leftI < threshold)) {
@@ -211,14 +210,15 @@ void tapeFollow()
         if (markcount == 5) pickUpAgentFive();
         if (markcount == 6) pickUpAgentSix();
       }
-      if (markcount > 6 && markcount != 10) //just skip over these marks
+      if (markcount > 6 && markcount != 9) //just skip over these marks
       {
         motor.speed(0, -150);
         motor.speed(1, +150);
       }
-      if (markcount == 10) //can change, this is the mark we go to before we go to the zipline
+      if (markcount == 9) //can change, this is the mark we go to before we go to the zipline
       {
-        //driveToZipline();
+        driveToZipline();
+        hookZipline();
       }
       markcount = markcount + 1;
     }
@@ -238,11 +238,15 @@ void gateCheck() {
     motor.speed(1, 0);
 
     if ( irSensor10 > tenkhzThresh && irSensor1 < onekhzThresh) {
+      LCD.clear(); LCD.home();
+      LCD.print("1");
       while(analogRead(4) < onekhzThresh && analogRead(5) > tenkhzThresh){}
       pastGate++;
    }
 
     if ( irSensor10 < tenkhzThresh && irSensor1 > onekhzThresh && pastGate == 0) {
+      LCD.clear(); LCD.home();
+      LCD.print("2");
       while(analogRead(4) > onekhzThresh && analogRead(5) < tenkhzThresh){}
       while(analogRead(4) < onekhzThresh && analogRead(5) > tenkhzThresh){}
       pastGate++;
@@ -251,20 +255,63 @@ void gateCheck() {
 }
 
 void driveToZipline() {
+  RCServo0.write(110);
+  RCServo1.write(180-110);
+  RCServo2.write(0);
+  delay(300);
+  baseServo.write(80);
+  
   int inputButton =1; //change
   float timeStart = millis();
-  float timeDrive = 2500;
+  float timeDrive = 3000;
 
   while( (millis() - timeStart) < timeDrive ) {
     motor.speed(0, -0.5*SPEED);
     motor.speed(0, 0.5*SPEED);
-    if( digitalRead(inputButton) == HIGH ){
-      break;
-    }
+//    if( digitalRead(inputButton) == HIGH ){
+//      break;
+//    }
   }
   motor.speed(0,0);
   motor.speed(0,1);
 }
 
+void hookZipline()
+{
+  // grab mechanism -------
+  baseServo.write(100);
+  RCServo2.write(90);
+  delay(300);
+  RCServo0.write(100);
+  RCServo1.write(180-100);
+  motor.speed(2, 200);
+  delay(4000);
+  motor.speed(2, 50);
+  // ----------------------
+
+  if(course == 1 || course == 0)
+  {
+    RCServo2.write(180);
+    RCServo0.write(0);
+    RCServo1.write(180-0);
+    delay(200);
+    RCServo2.write(80);
+    delay(200);
+    baseServo.write(100);
+    delay(1000);
+  }
+  else
+  {
+    RCServo2.write(180);
+    RCServo0.write(0);
+    RCServo1.write(180-0);
+    delay(200);
+    RCServo2.write(80);
+    delay(200);
+    baseServo.write(80);
+    delay(1000);
+  }
+  
+}
 
 
