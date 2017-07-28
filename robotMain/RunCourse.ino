@@ -1,7 +1,3 @@
-// servo0, servo1 - backarm
-// servo2 -forearm - 180pointing towards chassis
-// motor2 - end effector - 1.8sec to close, when close give it small speed to keep it closed
-// digital pin - base - 0 = pointing left facing TINAH
 float irSensor1 = 0;
 float irSensor10 = 0;
 int timeStart;
@@ -222,7 +218,7 @@ void tapeFollow()
       }
       if (markcount == 10) //can change, this is the mark we go to before we go to the zipline
       {
-        // alignToZipline();
+        //driveToZipline();
       }
       markcount = markcount + 1;
     }
@@ -252,6 +248,22 @@ void gateCheck() {
       pastGate++;
     } 
   }
+}
+
+void driveToZipline() {
+  int inputButton =1; //change
+  float timeStart = millis();
+  float timeDrive = 2500;
+
+  while( (millis() - timeStart) < timeDrive ) {
+    motor.speed(0, -0.5*SPEED);
+    motor.speed(0, 0.5*SPEED);
+    if( digitalRead(inputButton) == HIGH ){
+      break;
+    }
+  }
+  motor.speed(0,0);
+  motor.speed(0,1);
 }
 
 
