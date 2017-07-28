@@ -8,11 +8,11 @@
 
 bool strategyIsSet = false;
 int course = 0; //0 = no course, 1 = right, 2 = left
-float kp = 8; //40
-float kd = 10; //50
-int threshold = 40;
+float kp = 25; //30
+float kd = 35; //40
+int threshold = 60;
 int gain = 1;
-int SPEED = 130; //200
+int SPEED = 150; //200
 int currentSPEED = SPEED;
 float rightSensorCorrection = 1;
 int pastGate = 0;
