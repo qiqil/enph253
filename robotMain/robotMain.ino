@@ -4,19 +4,22 @@
  */
  
 #include <phys253.h>          
-#include <LiquidCrystal.h>    
+#include <LiquidCrystal.h>
+#include <ServoTINAH.h>   
 
 bool strategyIsSet = false;
 int course = 0; //0 = no course, 1 = right, 2 = left
-float kp = 25; //30
+float kp = 20; //30
 float kd = 35; //40
 int threshold = 60;
 int gain = 1;
-int SPEED = 150; //200
+int SPEED = 120; //200
 int currentSPEED = SPEED;
 float rightSensorCorrection = 1;
 int pastGate = 0;
-ServoTINAH servos[6];
+float tenkhzThresh = 20; //change
+float onekhzThresh = 10; //change
+ServoTINAH baseServo;
 
 void setup()
 {
@@ -24,16 +27,16 @@ void setup()
   portMode(1, OUTPUT) ;      //   ***** from 253 template file
   
   LCD.begin(16,2) ;
-
-  for (int i = 0; i <6; i++)
-  {
-    servos[i].attach(i+8);
-  }    
+  RCServo0.attach(RCServo0Output) ;    // attaching the digital inputs to the RC servo pins on the board.  
+  RCServo1.attach(RCServo1Output) ;
+  RCServo2.attach(RCServo2Output) ;
+  baseServo.attach(8);   
   Serial.begin(9600);  
 }
  
 void loop()
 { 
+  //pickUpAgentOne();
   mainMenu();
 //  for (int i = 0; i <6; i++)
 //  {

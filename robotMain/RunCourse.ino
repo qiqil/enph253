@@ -1,14 +1,21 @@
-float tenkhzThresh = 50; //change
-float onekhzThresh = 110; //change
 float irSensor1 = 0;
 float irSensor10 = 0;
+int timeStart;
+int adjustForGate = 0;
 
 void runCourse()
 {
   pastGate = 0;
   LCD.clear(); LCD.home();
   LCD.print("Tape Following");
+  RCServo0.write(110);
+  RCServo1.write(180-110);
+  RCServo2.write(0);
+  //delay(300);
+  baseServo.write(80);
   delay(1000);
+  //add code so no wheelies?  
+  timeStart = millis();
   tapeFollow();
   motor.speed(0, 0);
   motor.speed(1, 0);
@@ -49,6 +56,15 @@ void tapeFollow()
 
   while (digitalRead(49) == HIGH)
   {
+    if (millis() - timeStart > 1800 && adjustForGate == 0)
+    {
+      RCServo0.write(115);
+      RCServo1.write(180-115);
+      adjustForGate++;
+    }
+    if(pastGate == 0) {
+      gateCheck();
+    }
     ki = 0;
     leftO = analogRead(3);
     leftI = analogRead(2);
@@ -115,6 +131,10 @@ void tapeFollow()
     I = 0;
 
     control = gain * (P + D + I);
+
+    if(pastGate == 0) {
+      gateCheck();
+    }
 
     if (count == 30)
     {
@@ -213,18 +233,9 @@ void gateCheck() {
   irSensor1 = analogRead(4);
   irSensor10 = analogRead(5);
 
-  if ( ( irSensor10 > tenkhzThresh ) || (irSensor1 > onekhzThresh) ) {
-
-    LCD.clear(); LCD.home();
-    LCD.print("1K ");
-    LCD.setCursor(0, 0); 
-    LCD.print(irSensor1);
-    LCD.setCursor(0, 1); 
-    LCD.print("10K ");
-    LCD.print(irSensor10);    
+  if ( ( irSensor10 > tenkhzThresh ) || (irSensor1 > onekhzThresh) ) { 
     motor.speed(0, 0);
     motor.speed(1, 0);
-    //delay(2000);
 
     if ( irSensor10 > tenkhzThresh && irSensor1 < onekhzThresh) {
       while(analogRead(4) < onekhzThresh && analogRead(5) > tenkhzThresh){}
@@ -239,28 +250,5 @@ void gateCheck() {
   }
 }
 
-void pickUpAgentOne() {
-  //lower claw to medium position
-}
-
-void pickUpAgentTwo() {
-  //lower claw to lowest position
-}
-
-void pickUpAgentThree() {
-  //lower claw to highest position
-}
-
-void pickUpAgentFour() {
-  //lower claw to medium position
-}
-
-void pickUpAgentFive() {
-  //lower claw to lowest position
-}
-
-void pickUpAgentSix() {
-  //lower claw to highest position
-}
 
 
