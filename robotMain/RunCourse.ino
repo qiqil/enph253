@@ -55,7 +55,7 @@ void tapeFollow()
 
   while (digitalRead(49) == HIGH)
   {
-    if (millis() - timeStart > 1800 && adjustForGate == 0)
+    if (millis() - timeStart > 2000 && adjustForGate == 0)
     {
       RCServo0.write(130);
       RCServo1.write(180-130);

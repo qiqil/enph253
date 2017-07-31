@@ -16,7 +16,7 @@ void pickUpAgentOne() {
   
   if (course == 0 || course == 1)
   {
-    baseServo.write(0);
+    baseServo.write(20);
   }
   else
   {
@@ -46,7 +46,7 @@ void pickUpAgentTwo() {
   //lower claw to lowest position
   if (course == 0 || course == 1)
   {
-    baseServo.write(0);
+    baseServo.write(20);
   }
   else
   {
@@ -76,7 +76,7 @@ void pickUpAgentThree() {
   //lower claw to highest position
   if (course == 0 || course == 1)
   {
-    baseServo.write(0);
+    baseServo.write(20);
   }
   else
   {
@@ -106,7 +106,7 @@ void pickUpAgentFour() {
   //lower claw to medium position
   if (course == 0 || course == 1)
   {
-    baseServo.write(0);
+    baseServo.write(20);
   }
   else
   {
@@ -136,7 +136,7 @@ void pickUpAgentFive() {
   //lower claw to lowest position
   if (course == 0 || course == 1)
   {
-    baseServo.write(0);
+    baseServo.write(20);
   }
   else
   {
@@ -166,7 +166,7 @@ void pickUpAgentSix() {
   //lower claw to highest position
   if (course == 0 || course == 1)
   {
-    baseServo.write(0);
+    baseServo.write(20);
   }
   else
   {
