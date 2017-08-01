@@ -11,14 +11,13 @@ bool strategyIsSet = false;
 int course = 0; //0 = no course, 1 = right, 2 = left
 float kp = 20; //30
 float kd = 35; //40
-int threshold = 60;
+int threshold = 60; //tape following
 int gain = 1;
-int SPEED = 150; //200
+int SPEED = 170; //200
 int currentSPEED = SPEED;
 int pastGate = 0;
 float tenkhzThresh = 20; //change
 float onekhzThresh = 20; //change
-float correction = 0.3;
 ServoTINAH baseServo;
 
 void setup()

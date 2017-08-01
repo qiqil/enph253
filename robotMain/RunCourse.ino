@@ -8,38 +8,13 @@ void runCourse()
   pastGate = 0;
   LCD.clear(); LCD.home();
   LCD.print("Tape Following");
-  RCServo2.write(0);
-  baseServo.write(80);
-  delay(300);
-  RCServo0.write(100);
-  RCServo1.write(180-100);
+  moveArmToStartPosition();
   delay(1000); 
   timeStart = millis();
   tapeFollow();
   motor.speed(0, 0);
   motor.speed(1, 0);
 }
-
-//void alignToZipline()
-//{
-//  float leftIR = analogRead(2); //if these are changed, must change in IRmenu as well
-//  float rightIR = analogRead(3); //!!!!!!!!^^^^^^^^^^^!!!!!!!!!
-//  float uncertainty = .1;
-//  while (leftIR > rightIR * rightSensorCorrection + rightIR * rightSensorCorrection * uncertainty || leftIR > rightIR * rightSensorCorrection - rightIR * rightSensorCorrection * uncertainty)
-//  {
-//    if (leftIR > rightIR * rightSensorCorrection)
-//    {
-//      motor.speed(0, 0); //turn left
-//      motor.speed(1, 150);
-//    }
-//    else {
-//      motor.speed(0, -150); //turn right
-//      motor.speed(1, 0);
-//    }
-//  }
-//  motor.speed(0, 0);
-//  motor.speed(1, 0);
-//}
 
 void tapeFollow()
 {
@@ -73,9 +48,7 @@ void tapeFollow()
     if ((leftI > threshold) && (rightI > threshold)) {
       error = 0;
       currentSPEED = SPEED;
-
     } //less then threshold means its off the tape (QRD senses, value of sensor voltage goes up)
-
     if ((leftI > threshold) && (rightI < threshold) && (leftO < threshold)) {
       error = -1;
       currentSPEED = SPEED;
@@ -84,18 +57,14 @@ void tapeFollow()
       error = +1;
       currentSPEED = SPEED;
     }
-
     if ((leftI > threshold) && (leftO > threshold)) {
       error = -2;
       currentSPEED = 0.8 * SPEED;
     }
-
     if ((rightI > threshold) && (rightO > threshold)) {
       error = +2;
       currentSPEED = 0.8 * SPEED;
     }
-
-
     if ((leftO > threshold) && (leftI < threshold)) {
       error = -3;
       currentSPEED = 0.65 * SPEED;
@@ -104,7 +73,6 @@ void tapeFollow()
       error = +3;
       currentSPEED = 0.65 * SPEED;
     }
-
     if ((leftO < threshold) && (leftI < threshold)) {
       if ((rightI < threshold) && (rightO < threshold)) {
         if (lasterror > 0) error = 5;
@@ -112,9 +80,18 @@ void tapeFollow()
         currentSPEED = 0.8 * SPEED;
       }
     }
-
     if ((leftI > threshold) && (rightI > threshold) && (rightO > threshold) && (leftO > threshold)) { //all sensor see something
       error = +100; //100 means stop
+    }
+    if ((leftI > threshold) && (rightI > threshold) && (rightO > threshold)) //three sensor see somethign, this is the circle start after looped around the tank
+    {
+      error = 0;
+      currentSPEED = 0.65 * SPEED;
+    }
+    if ((leftI > threshold) && (rightI > threshold) && (leftO > threshold)) //three sensor see somethign, this is the circle start after looped around the tank
+    {
+      error = 0;
+      currentSPEED = 0.65 * SPEED;
     }
 
     if (!(error == lasterror)) {
@@ -160,7 +137,7 @@ void tapeFollow()
     }
     //--------------------------------------------------------------------------------------------------------
     else {
-      if (markcount == 0) { //!!!!!!!!!!!!!!!!!!!!
+      if (markcount == 0) {
         if(course == 1 || course == 0)
         {
           motor.speed(0, -currentSPEED + sharpRightControl); //right motor (looking at tina)
@@ -173,7 +150,7 @@ void tapeFollow()
         }
         delay(200);
       }
-      if (markcount > 0 && markcount <= 6) { //!!!!!!!!!!!!!!!!!!!!
+      if (markcount > 0 && markcount <= 6) {
         motor.speed(0, +200);
         motor.speed(1, -200);
         q = 1;
@@ -194,7 +171,7 @@ void tapeFollow()
             if (lasterror <= 0) lasterror = -5;
           }
         }
-        delay(100); //time reverse
+        delay(50); //time reverse
         LCD.clear(); LCD.home();
         LCD.print("mark -> ");
         LCD.print(markcount);
@@ -210,7 +187,7 @@ void tapeFollow()
         if (markcount == 5) pickUpAgentFive();
         if (markcount == 6) pickUpAgentSix();
       }
-      if (markcount > 6 && markcount != 9) //just skip over these marks
+      if (markcount > 6 && markcount != 8) //just skip over these marks
       {
         LCD.clear(); LCD.home();
         LCD.print("mark -> ");
@@ -220,10 +197,11 @@ void tapeFollow()
         motor.speed(0, -150);
         motor.speed(1, +150);
       }
-      if (markcount == 9) //can change, this is the mark we go to before we go to the zipline
+      if (markcount == 8) //can change, this is the mark we go to before we go to the zipline
       {
         driveToZipline();
-        hookZipline();
+        //hookZipline(); !!!!!!!!!!!!!!!!!!!!
+        delay(10000); //!!!!!!!!!!!!!!!!!
       }
       markcount = markcount + 1;
     }
@@ -278,25 +256,29 @@ void gateCheck() {
 }
 
 void driveToZipline() {
-  RCServo0.write(110);
-  RCServo1.write(180-110);
-  RCServo2.write(0);
-  delay(300);
-  baseServo.write(80);
+  moveArmToStartPosition();
+  LCD.clear(); LCD.home();
+  LCD.print("Finding");
+  LCD.setCursor(0,1);
+  LCD.print("zipline");
   
   int inputButton =1; //change
   float timeStart = millis();
   float timeDrive = 3000;
-
+  motor.speed(0, -130);
+  motor.speed(1, +130);
   while( (millis() - timeStart) < timeDrive ) {
-    motor.speed(0, -0.5*SPEED);
-    motor.speed(0, 0.5*SPEED);
+    if ((millis() - timeStart) > timeDrive-timeDrive*.2)
+    {
+      motor.speed(0, -110);
+      motor.speed(1, +110);
+    }
 //    if( digitalRead(inputButton) == HIGH ){
 //      break;
 //    }
   }
   motor.speed(0,0);
-  motor.speed(0,1);
+  motor.speed(1,0);
 }
 
 void hookZipline()

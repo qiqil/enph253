@@ -122,5 +122,3 @@ void liftAndDropIntoBin()
   delay(2500);
   motor.speed(2, 0);
 }
-
-
