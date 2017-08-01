@@ -11,8 +11,8 @@ void runCourse()
   RCServo2.write(0);
   baseServo.write(80);
   delay(300);
-  RCServo0.write(110);
-  RCServo1.write(180-110);
+  RCServo0.write(100);
+  RCServo1.write(180-100);
   delay(1000); 
   timeStart = millis();
   tapeFollow();
@@ -55,7 +55,7 @@ void tapeFollow()
 
   while (digitalRead(49) == HIGH)
   {
-    if (millis() - timeStart > 2000 && adjustForGate == 0)
+    if (millis() - timeStart > 1900 && adjustForGate == 0)
     {
       RCServo0.write(130);
       RCServo1.write(180-130);
@@ -135,15 +135,15 @@ void tapeFollow()
       gateCheck();
     }
 
-    if (count == 30)
+    if (count == 50)
     {
       LCD.clear(); LCD.home();
       LCD.setCursor(0, 0); 
-      LCD.print(" LI ");
-      LCD.print(leftI);
+      LCD.print("1K ");
+      LCD.print(analogRead(4));
       LCD.setCursor(0, 1); 
-      LCD.print(" RI ");
-      LCD.print(rightI);
+      LCD.print("10K ");
+      LCD.print(analogRead(5));
       //LCD.setCursor(7,0); LCD.print(int(-SPEED + control)); //printing  FINAL SPEED OF RIGHT
       //LCD.setCursor(7,1); LCD.print(int(SPEED + control));  //PRINTING FINAL SPEED OF LEFT
       //LCD.setCursor(7,0); LCD.print((int)kp);
@@ -212,6 +212,11 @@ void tapeFollow()
       }
       if (markcount > 6 && markcount != 9) //just skip over these marks
       {
+        LCD.clear(); LCD.home();
+        LCD.print("mark -> ");
+        LCD.print(markcount);
+        LCD.setCursor(0, 1);
+        LCD.print("le -> ");
         motor.speed(0, -150);
         motor.speed(1, +150);
       }
@@ -230,26 +235,44 @@ void tapeFollow()
 }
 
 void gateCheck() {
-  irSensor1 = analogRead(4);
-  irSensor10 = analogRead(5);
+  //irSensor1 = analogRead(4);
+  //irSensor10 = analogRead(5);
 
-  if ( ( irSensor10 > tenkhzThresh ) || (irSensor1 > onekhzThresh) ) { 
+  if ( ( analogRead(5) > tenkhzThresh ) || (analogRead(4) > onekhzThresh) ) { 
     motor.speed(0, 0);
     motor.speed(1, 0);
+    LCD.clear(); LCD.home();
+    LCD.print(irSensor10);
+    LCD.print(" ");
+    LCD.print(irSensor1);
+    //delay(2000);
 
-    if ( irSensor10 > tenkhzThresh && irSensor1 < onekhzThresh) {
+    if ( (analogRead(5) >= tenkhzThresh) && (analogRead(4) < onekhzThresh)) {
+      LCD.clear(); LCD.home();
+      LCD.print("10K ");
+      LCD.print(analogRead(5));
+      while((analogRead(4) < onekhzThresh) && analogRead(5) >= tenkhzThresh)
+      {
+        delay(10);
+        pastGate++;
+      }
+   }
+    else if ( (analogRead(5) < tenkhzThresh) && (analogRead(4) >= onekhzThresh)) {
+      LCD.clear(); LCD.home();
+      LCD.print("1K ");
+      LCD.print(analogRead(4));
+      while((analogRead(5) < tenkhzThresh) && (analogRead(4) >= onekhzThresh))
+      {
+        delay(10);
+        pastGate++;
+      }
       LCD.clear(); LCD.home();
       LCD.print("1");
-      while(analogRead(4) < onekhzThresh && analogRead(5) > tenkhzThresh){}
-      pastGate++;
-   }
-
-    if ( irSensor10 < tenkhzThresh && irSensor1 > onekhzThresh && pastGate == 0) {
-      LCD.clear(); LCD.home();
-      LCD.print("2");
-      while(analogRead(4) > onekhzThresh && analogRead(5) < tenkhzThresh){}
-      while(analogRead(4) < onekhzThresh && analogRead(5) > tenkhzThresh){}
-      pastGate++;
+      delay(100);
+      while((analogRead(4) < onekhzThresh) && (analogRead(5) >= tenkhzThresh) && pastGate != 0)
+      {
+        delay(10);
+      }
     } 
   }
 }

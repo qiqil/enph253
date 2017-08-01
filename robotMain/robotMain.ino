@@ -13,12 +13,12 @@ float kp = 20; //30
 float kd = 35; //40
 int threshold = 60;
 int gain = 1;
-int SPEED = 160; //200
+int SPEED = 150; //200
 int currentSPEED = SPEED;
-float rightSensorCorrection = 1;
 int pastGate = 0;
-float tenkhzThresh = 10; //change
+float tenkhzThresh = 20; //change
 float onekhzThresh = 20; //change
+float correction = 0.3;
 ServoTINAH baseServo;
 
 void setup()
