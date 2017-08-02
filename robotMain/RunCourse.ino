@@ -80,18 +80,33 @@ void tapeFollow()
         currentSPEED = 0.8 * SPEED;
       }
     }
+    if ((leftI > threshold) && (rightI > threshold) && (rightO > threshold) && (leftO < threshold) && (markcount > 6)) //three sensor see something, this is the circle start after looped around the tank
+    {
+      error = 1;
+      currentSPEED = 0.65 * SPEED;
+      delay(20);
+    }
+    if ((leftI > threshold) && (rightI > threshold) && (leftO > threshold) && (rightO < threshold) && (markcount > 6)) //three sensor see something, this is the circle start after looped around the tank
+    {
+      error = -1;
+      currentSPEED = 0.65 * SPEED;
+      delay(20);
+    }
     if ((leftI > threshold) && (rightI > threshold) && (rightO > threshold) && (leftO > threshold)) { //all sensor see something
+      if (markcount > 6)
+      {
+        if (course == 0 || course == 1)
+        {
+          error = -1;
+          delay(20);
+        }
+        else
+        {
+          error = +1;
+          delay(20);
+        }
+      }
       error = +100; //100 means stop
-    }
-    if ((leftI > threshold) && (rightI > threshold) && (rightO > threshold)) //three sensor see somethign, this is the circle start after looped around the tank
-    {
-      error = 0;
-      currentSPEED = 0.65 * SPEED;
-    }
-    if ((leftI > threshold) && (rightI > threshold) && (leftO > threshold)) //three sensor see somethign, this is the circle start after looped around the tank
-    {
-      error = 0;
-      currentSPEED = 0.65 * SPEED;
     }
 
     if (!(error == lasterror)) {
@@ -138,26 +153,40 @@ void tapeFollow()
     //--------------------------------------------------------------------------------------------------------
     else {
       if (markcount == 0) {
+        LCD.clear(); LCD.home();
+        LCD.print("mark -> ");
+        LCD.print(markcount);
+        motor.speed(0, +200);
+        motor.speed(1, -200);
         if(course == 1 || course == 0)
         {
-          motor.speed(0, -currentSPEED + sharpRightControl); //right motor (looking at tina)
-          motor.speed(1, currentSPEED + sharpRightControl);  //left motor
+          motor.speed(0, -currentSPEED*.4 + sharpRightControl); //right motor (looking at tina)
+          motor.speed(1, -currentSPEED*1.2 + sharpRightControl);  //left motor
+          //lasterror = +3;
+          //delay(1000);
         }
         else
         {
-          motor.speed(0, -currentSPEED + sharpLeftControl); //right motor (looking at tina)
-          motor.speed(1, currentSPEED + sharpLeftControl);  //left motor
+          motor.speed(0, currentSPEED*.4 + sharpLeftControl); //right motor (looking at tina)
+          motor.speed(1, currentSPEED*1.2 + sharpLeftControl);  //left motor
+          //lasterror = -3;
+          //delay(1000);
         }
-        delay(200);
+        delay(100);
       }
       if (markcount > 0 && markcount <= 6) {
         motor.speed(0, +200);
         motor.speed(1, -200);
+        delay(20);
         q = 1;
         leftO = analogRead(3);
         leftI = analogRead(2);
         rightI = analogRead(1);
         rightO = analogRead(0);
+        if((leftI > threshold) && (rightI > threshold) && (rightO > threshold) && (leftO > threshold))
+        {
+          lasterror = 0;
+        }
         if ((leftI > threshold) && (rightI > threshold)) lasterror = 0;
         if ((leftI > threshold) && (rightI < threshold) && (leftO < threshold)) lasterror = -1;
         if ((leftI < threshold) && (rightI > threshold) && (rightO < threshold)) lasterror = +1;
@@ -171,39 +200,45 @@ void tapeFollow()
             if (lasterror <= 0) lasterror = -5;
           }
         }
-        delay(50); //time reverse
+        delay(10); //time reverse
+        motor.speed(0, 0);
+        motor.speed(1, 0);
         LCD.clear(); LCD.home();
         LCD.print("mark -> ");
         LCD.print(markcount);
         LCD.setCursor(0, 1);
         LCD.print("le -> ");
         LCD.print(lasterror);
-        motor.speed(0, 0);
-        motor.speed(1, 0);
-        if (markcount == 1) pickUpAgentOne();
-        if (markcount == 2) pickUpAgentTwo();
-        if (markcount == 3) pickUpAgentThree();
-        if (markcount == 4) pickUpAgentFour();
-        if (markcount == 5) pickUpAgentFive();
-        if (markcount == 6) pickUpAgentSix();
+        delay(1000);
+        if (markcount == 1)
+        {
+          if (course == 0 || course == 1)
+          {
+            lasterror = -3;
+          }
+          else {
+            lasterror = 3;
+          }
+        }
+//        if (markcount == 1) pickUpAgentOne();
+//        if (markcount == 2) pickUpAgentTwo();
+//        if (markcount == 3) pickUpAgentThree();
+//        if (markcount == 4) pickUpAgentFour();
+//        if (markcount == 5) pickUpAgentFive();
+//        if (markcount == 6) pickUpAgentSix();
       }
-      if (markcount > 6 && markcount != 8) //just skip over these marks
+      if (markcount == 8) //can change, this is the mark we go to before we go to the zipline
       {
         LCD.clear(); LCD.home();
         LCD.print("mark -> ");
         LCD.print(markcount);
-        LCD.setCursor(0, 1);
-        LCD.print("le -> ");
-        motor.speed(0, -150);
-        motor.speed(1, +150);
-      }
-      if (markcount == 8) //can change, this is the mark we go to before we go to the zipline
-      {
         driveToZipline();
         //hookZipline(); !!!!!!!!!!!!!!!!!!!!
         delay(10000); //!!!!!!!!!!!!!!!!!
       }
-      markcount = markcount + 1;
+      LCD.clear(); LCD.home();
+      LCD.print("HERE");
+      markcount++;
     }
     //--------------------------------------------------------------------------------------------------------
     if(pastGate == 0) {
@@ -261,12 +296,33 @@ void driveToZipline() {
   LCD.print("Finding");
   LCD.setCursor(0,1);
   LCD.print("zipline");
-  
+  if (course == 1 || course == 0)
+  {
+    motor.speed(0, -130);
+    motor.speed(1, 0);
+    LCD.clear(); LCD.home();
+    LCD.print("Correction");
+    LCD.setCursor(0,1);
+    LCD.print("left");
+    delay(300);
+  }
+  else
+  {
+    motor.speed(0, 0);
+    motor.speed(1, +130);
+    LCD.clear(); LCD.home();
+    LCD.print("Correction");
+    LCD.setCursor(0,1);
+    LCD.print("right");
+    delay(300);
+  }
   int inputButton =1; //change
   float timeStart = millis();
   float timeDrive = 3000;
   motor.speed(0, -130);
   motor.speed(1, +130);
+  LCD.clear(); LCD.home();
+  LCD.print("Forward");
   while( (millis() - timeStart) < timeDrive ) {
     if ((millis() - timeStart) > timeDrive-timeDrive*.2)
     {
@@ -316,7 +372,6 @@ void hookZipline()
     baseServo.write(80);
     delay(1000);
   }
-  
 }
 
 

@@ -14,6 +14,8 @@ void moveArmToStartPosition()
 void pickUpAgentOne() {
   // medium position
   int backarmAngle = 0;
+  LCD.clear(); LCD.home();
+  LCD.print("10");
   backArmPosition(backarmAngle, 2); //2nd param is delay time, moving servo (bigger means slower movement)
   delay(500);
   foreArmPosition(0,2); //second parameter is always the delay time (ms), moving servo
@@ -66,9 +68,9 @@ void positionAndGrab(int position) { // 1 to 3, 1 lowest 3 highest
 
   int backarmAngle = 0;
   int forearmAngle = 0; //change 
-  if (position == 1) backarmAngle = 130; forearmAngle = 40; //change 
-  if (position == 2) backarmAngle = 130; forearmAngle = 40; // change
-  if (position == 3) backarmAngle = 130; forearmAngle = 40;// change
+  if (position == 1) backarmAngle = 130; forearmAngle = 50; //change 
+  if (position == 2) backarmAngle = 130; forearmAngle = 50; // change
+  if (position == 3) backarmAngle = 130; forearmAngle = 50;// change
 
   backArmForeArmPosition(backarmAngle, forearmAngle, 5); //move both same time, delay time of 5 ms
   
@@ -93,11 +95,17 @@ void foreArmPosition( int foreArmAngle, int delayTime) {
 }
 
 void backArmPosition(int backArmAngle, int delayTime) {
+  LCD.clear(); LCD.home();
+  LCD.print("11");
   for (int angle = 0; angle <=backArmAngle; angle++) {
     RCServo0.write(angle);
     RCServo1.write(180-angle);
+    LCD.clear(); LCD.home();
+    LCD.print("12");
     delay(delayTime);
   }
+  LCD.clear(); LCD.home();
+  LCD.print("13");
 }
 
 void backArmForeArmPosition( int backArmAngle, int foreArmAngle,int delayTime) {  //moving both forearm and back arm same time
