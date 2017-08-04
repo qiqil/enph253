@@ -1,5 +1,4 @@
-float irSensor1 = 0;
-float irSensor10 = 0;
+float irSensor10, irSensor1;
 int timeStart;
 int adjustForGate = 0;
 int error, rightO, leftO, rightI, leftI, control;
@@ -251,44 +250,41 @@ void driveToZipline() {
 void hookZipline()
 {
   // grab mechanism -------
-  baseServo.write(100);
-  RCServo2.write(90);
+  baseServoPosition(100,1);
+  foreArmPosition(90,1);
   delay(300);
-  RCServo0.write(100);
-  RCServo1.write(180-100);
+  backArmPosition(100,1);
   motor.speed(2, 200);
   delay(4000);
   motor.speed(2, 50);
   
   if(course == 1 || course == 0)
   {
-    RCServo2.write(180);
-    RCServo0.write(0);
-    RCServo1.write(180-0);
+    foreArmPosition(180,1);
+    backArmPosition(0,1);
     delay(200);
-    RCServo2.write(80);
+    foreArmPosition(80,1);
     delay(200);
-    baseServo.write(100);
+    baseServoPosition(100,1);
     delay(1000);
   }
   else
   {
-    RCServo2.write(180);
-    RCServo0.write(0);
-    RCServo1.write(180-0);
+    foreArmPosition(180,1);
+    backArmPosition(0,1);
     delay(200);
-    RCServo2.write(80);
+    foreArmPosition(80,1);
     delay(200);
-    baseServo.write(80);
+    baseServoPosition(80,1);
     delay(1000);
   }
 }
 //-----------------------------------------------------------------------------------------
 int qrdSense() {
-  leftO = analogRead(3);
-  leftI = analogRead(2);
-  rightI = analogRead(1);
-  rightO = analogRead(0);
+  leftO = analogRead(0);
+  leftI = analogRead(1);
+  rightI = analogRead(2);
+  rightO = analogRead(3);
   
   int error = 0;
   if ((leftI > threshold) && (rightI > threshold)) error = 0; 
@@ -314,10 +310,10 @@ void updateSpeed() {
 }
 //------------------------------------------------------------------------------------------------------------------------
 void specialCaseQrdSense() {
-  leftO = analogRead(3);
-  leftI = analogRead(2);
-  rightI = analogRead(1);
-  rightO = analogRead(0); 
+  leftO = analogRead(0);
+  leftI = analogRead(1);
+  rightI = analogRead(2);
+  rightO = analogRead(3); 
   int error = 0; 
   
   if ((leftI > threshold) && (rightI > threshold) && (rightO > threshold) && (leftO < threshold) && (markcount > 6))
