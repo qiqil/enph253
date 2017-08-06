@@ -4,7 +4,7 @@ int hillIRDelayStart = 0;
 
 void runCourse()
 {
-  pastGate = false;
+  pastGate = 0;
   LCD.clear(); LCD.home();
   LCD.print("Tape Following");
   moveArmToStartPosition();
@@ -28,8 +28,7 @@ void tapeFollow()
 
   while (digitalRead(49) == HIGH)
   {
-
-    if(pastGate == false) {
+    if(pastGate == 0) {
       gateCheck();
     }
     ki = 0;
@@ -38,91 +37,58 @@ void tapeFollow()
     rightI = analogRead(2);
     rightO = analogRead(3);
     
-
-	//less than threshold = off the tape (large voltage = tape detected)
-	
-	//robot is centered; (LeftI & RightI on tape)
-    if ((leftI > threshold) 
-			&& (rightI > threshold)) {
+    if ((leftI > threshold) && (rightI > threshold)) {
       error = 0;
       currentSPEED = SPEED;
-    } 
-    
-	//robot is slightly right leaning
-	if ((leftO < threshold) && (leftI > threshold) 
-			&& (rightI < threshold) ) {
+    } //less then threshold means its off the tape (QRD senses, value of sensor voltage goes up)
+    if ((leftI > threshold) && (rightI < threshold) && (leftO < threshold)) {
       error = -1;
       currentSPEED = SPEED;
     }
-	
-	//robot is slightly left leaning
-    if ((leftI < threshold) 
-			&& (rightI > threshold) && (rightO < threshold)) {
+    if ((leftI < threshold) && (rightI > threshold) && (rightO < threshold)) {
       error = +1;
       currentSPEED = SPEED;
     }
-	//robot is right leaning 
-    if ((leftO > threshold) && (leftI > threshold)) {
+    if ((leftI > threshold) && (leftO > threshold)) {
       error = -2;
-      currentSPEED = 0.95 * SPEED;
+      currentSPEED = 0.9 * SPEED;
     }
-	//robot is left leaning
     if ((rightI > threshold) && (rightO > threshold)) {
       error = +2;
-      currentSPEED = 0.95 * SPEED;
+      currentSPEED = 0.9 * SPEED;
     }
-	//robot is very right leaning (heil)
     if ((leftO > threshold) && (leftI < threshold)) {
       error = -3;
-
       currentSPEED = 0.9 * SPEED;
     }
-	//robot is very far left leaning (robot is very communist)
     if ((rightI < threshold) && (rightO > threshold)) {
       error = +3;
-
       currentSPEED = 0.9 * SPEED;
     }
-
-	
-	//robot sees nothing
-    if ((leftO < threshold) && (leftI < threshold) 
-			&& (rightI < threshold) && (rightO < threshold)) {
+    if ((leftO < threshold) && (leftI < threshold)) {
+      if ((rightI < threshold) && (rightO < threshold)) {
         if (lasterror > 0) error = 5;
         if (lasterror <= 0) error = -5;
-
         currentSPEED = 0.9 * SPEED;
       }
     }
-	
-	//three sensor see something;
-	//this is the circle start after looped around the tank
-    if ((leftO < threshold) && (leftI > threshold) 
-			&& (rightI > threshold) && (rightO > threshold) 
-			&& (markcount > 7)) {
+    if ((leftI > threshold) && (rightI > threshold) && (rightO > threshold) && (leftO < threshold) && (markcount > 6)) //three sensor see something, this is the circle start after looped around the tank
+    {
           motor.speed(0, currentSPEED*.4 + sharpLeftControl); //right motor (looking at tina)
           motor.speed(1, currentSPEED*1.2 + sharpLeftControl);  //left motor
           delay(100);
           error = -2;
           SPEED = SPEED*.7;
     }
-
-	
-	//three sensor see something; this is the circle start after looped around the tank
-    if ((leftO > threshold) && (leftI > threshold) 
-			&& (rightI > threshold) && (rightO < threshold) 
-			&& (markcount > 7)) {
-
+    if ((leftI > threshold) && (rightI > threshold) && (leftO > threshold) && (rightO < threshold) && (markcount > 6)) //three sensor see something, this is the circle start after looped around the tank
+    {
           motor.speed(0, -currentSPEED*.4 + sharpRightControl); //right motor (looking at tina)
           motor.speed(1, -currentSPEED*1.2 + sharpRightControl);  //left motor
           delay(100);
           error = +2;
           SPEED = SPEED*.7;
     }
-	
-	//all sensor see something
-    if ((leftO > threshold) && (leftI > threshold) 
-			&& (rightI > threshold) && (rightO > threshold)) { 
+    if ((leftI > threshold) && (rightI > threshold) && (rightO > threshold) && (leftO > threshold)) { //all sensor see something
       if (markcount == 0)
       {
         hillIRDelayStart = millis();
@@ -132,7 +98,7 @@ void tapeFollow()
         LCD.clear(); LCD.home();
         LCD.print(hillIRDelayStart); 
         error = +100; //100 means stop
-        if (markcount > 7)
+        if (markcount > 6)
         {
           markcount++;
           if (course == 0 || course == 1)
@@ -170,7 +136,7 @@ void tapeFollow()
 
     control = gain * (P + D + I);
 
-    if(pastGate == false) {
+    if(pastGate == 0) {
       gateCheck();
     }
 
@@ -199,7 +165,6 @@ void tapeFollow()
     }
     //--------------------------------------------------------------------------------------------------------
     else {
-
 //      if (markcount == 1) {
 //        LCD.clear(); LCD.home();
 //        LCD.print("mark -> ");
@@ -225,7 +190,6 @@ void tapeFollow()
       if (markcount > 0 && markcount <= 6) {
         motor.speed(0, +200);
         motor.speed(1, -200);
-
         delay(20);
         q = 1;
         leftO = analogRead(0);
@@ -259,7 +223,6 @@ void tapeFollow()
         LCD.print("le -> ");
         LCD.print(lasterror);
         delay(1000);
-
         if (markcount == 1)
         {
           if (course == 0 || course == 1)
@@ -270,7 +233,6 @@ void tapeFollow()
             lasterror = 3;
           }
         }
-
         if (markcount == 2) pickUpAgentOne();
         if (markcount == 3) pickUpAgentTwo();
         if (markcount == 4) pickUpAgentThree();
@@ -278,7 +240,6 @@ void tapeFollow()
         if (markcount == 6) pickUpAgentFive();
         if (markcount == 7) pickUpAgentSix();
       }
-
       if (markcount == 8) //can change, this is the mark we go to before we go to the zipline
       {
         LCD.clear(); LCD.home();
@@ -293,7 +254,7 @@ void tapeFollow()
       markcount++;
     }
     //--------------------------------------------------------------------------------------------------------
-    if(pastGate == false) {
+    if(pastGate == 0) {
       gateCheck();
     }
   }
@@ -319,8 +280,7 @@ void gateCheck() {
       while((analogRead(4) < onekhzThresh) && analogRead(5) >= tenkhzThresh)
       {
         delay(10);
-
-        pastGate = true;
+        pastGate++;
       }
    }
     else if ( (analogRead(5) < analogRead(4)) && (analogRead(4) >= onekhzThresh)) {
@@ -330,14 +290,12 @@ void gateCheck() {
       while((analogRead(5) < analogRead(4)) && (analogRead(4) >= onekhzThresh))
       {
         delay(10);
-
-        pastGate = true;
+        pastGate++;
       }
       LCD.clear(); LCD.home();
       LCD.print("1");
       delay(100);
-
-      while((analogRead(4) < onekhzThresh) && (analogRead(5) >= tenkhzThresh) && pastGate = true)
+      while((analogRead(4) < onekhzThresh) && (analogRead(5) >= tenkhzThresh) && pastGate != 0)
       {
         delay(10);
       }

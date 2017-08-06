@@ -15,29 +15,10 @@ int threshold = 60; //tape following
 int gain = 1;
 int SPEED = 250; //200
 int currentSPEED = SPEED;
-bool pastGate = false; 
+int pastGate = 0;
 float tenkhzThresh = 20; //change
 float onekhzThresh = 20; //change
 ServoTINAH baseServo;
-
-volatile unsigned long left_rotations = 0;
-volatile unsigned long right_rotations = 0;
-
-ISR(INT0_vect) {left_rotations++;}
-ISR(INT2_vect) {right_rotations++;}
-
-void enableExternalInterrupt(unsigned int INTX, unsigned int mode) {
-  if (INTX > 3 || mode > 3 || mode == 1) return;
-  cli();
-  /* Allow pin to trigger interrupts        */
-  EIMSK |= (1 << INTX);
-  /* Clear the interrupt configuration bits */
-  EICRA &= ~(1 << (INTX*2+0));
-  EICRA &= ~(1 << (INTX*2+1));
-  /* Set new interrupt configuration bits   */
-  EICRA |= mode << (INTX*2);
-  sei();
-}
 
 void setup()
 {
@@ -62,16 +43,14 @@ void setup()
   motor.speed(2, 0);
   //______________
   
-  Serial.begin(9600);
-
-  enableExternalInterrupt(INT0, RISING);
-  enableExternalInterrupt(INT2, RISING);
+  Serial.begin(9600);  
 }
  
 void loop()
 { 
   //delay(2000);
   pickUpAgentOne();
+  grabZiplineMechanismAndLift();
  
   //mainMenu();
 //  for (int i = 0; i <6; i++)

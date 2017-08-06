@@ -10,6 +10,8 @@ int closeTime = 4000;
 int openTime = 4000;
 int backarmGrabAngle = 100;
 int forearmGrabAngle = 110;
+int backarmZiplineGrabAngle = 20;
+int forearmZiplineGrabAngle = 150;
 
 void moveArmToStartPosition()
 {
@@ -18,6 +20,28 @@ void moveArmToStartPosition()
   delay(300);
   RCServo0.write(100);
   RCServo1.write(180-100);
+}
+
+void grabZiplineMechanismAndLift()
+{
+    moveBackarmAtSpeed(0, 5);
+    moveBaseAtSpeed(120, 10);
+    moveForearmAtSpeed(180, 5);
+
+    for (int angle = 0; angle < backarmZiplineGrabAngle; angle++)
+    {
+      moveBackarmAtSpeed(angle, 5);
+      float factor = forearmZiplineGrabAngle/backarmZiplineGrabAngle;
+      moveForearmAtSpeed(180 - angle*factor, 5); //forearmstarts at 180
+    }
+
+    motor.speed(2, 255);
+    delay(closeTime);
+    motor.speed(2, 50);
+  
+    moveBackarmAtSpeed(0, 5);
+    moveBaseAtSpeed(100, 10);
+    moveForearmAtSpeed(0, 5);
 }
 //------------------------------------------------------------------------
 void pickUpAgentOne() {
