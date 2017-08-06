@@ -9,11 +9,11 @@
 
 bool strategyIsSet = false;
 int course = 0; //0 = no course, 1 = right, 2 = left
-float kp = 30; //30
-float kd = 35; //40
+float kp = 40; //30
+float kd = 45; //40
 int threshold = 60; //tape following
 int gain = 1;
-int SPEED = 220; //200
+int SPEED = 250; //200
 int currentSPEED = SPEED;
 bool pastGate = false; 
 float tenkhzThresh = 20; //change
@@ -51,10 +51,16 @@ void setup()
   baseServo.attach(8);
   RCServo2.write(0);
   RCServo0.write(0);
-  baseServo.write(180);
   RCServo1.write(180);
   delay(500);
   baseServo.write(0);  
+
+
+  //DELETE_______
+  motor.speed(2, -255);
+  delay(2000);
+  motor.speed(2, 0);
+  //______________
   
   Serial.begin(9600);
 
@@ -64,9 +70,10 @@ void setup()
  
 void loop()
 { 
-  //pickUpAgentOne();
+  //delay(2000);
+  pickUpAgentOne();
  
-  mainMenu();
+  //mainMenu();
 //  for (int i = 0; i <6; i++)
 //  {
 //    servos[i].write(90);

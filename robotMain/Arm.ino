@@ -2,6 +2,15 @@
 // servo2 -forearm - 180pointing towards chassis
 // motor2 - end effector - 1.8sec to close, when close give it small speed to keep it closed
 // digital pin - base - 0 = pointing left facing TINAH
+int backarmRestAngle = 90;
+int baseRestAngle = 104;
+int rightCourseBasePickupAngle = 33;
+int leftCourseBasePickupAngle = 165;
+int closeTime = 4000;
+int openTime = 4000;
+int backarmGrabAngle = 100;
+int forearmGrabAngle = 110;
+
 void moveArmToStartPosition()
 {
   RCServo2.write(0);
@@ -13,120 +22,230 @@ void moveArmToStartPosition()
 //------------------------------------------------------------------------
 void pickUpAgentOne() {
   // medium position
-  int backarmAngle = 0;
-  LCD.clear(); LCD.home();
-  LCD.print("10");
-  backArmPosition(backarmAngle, 2); //2nd param is delay time, moving servo (bigger means slower movement)
-  delay(500);
-  foreArmPosition(0,2); //second parameter is always the delay time (ms), moving servo
-  motor.speed(2, -255);
-  delay(2000);
-  motor.speed(2, 0);
+  moveBackarmAtSpeed(0, 5);
+  moveForearmAtSpeed(180, 5);
+//  motor.speed(2, -255);
+//  delay(2000);
+//  motor.speed(2, 0);
   
-  positionAndGrab(2);
+  if (course == 0 || course == 1)
+  {
+    moveBaseAtSpeed(rightCourseBasePickupAngle, 5);
+  }
+  else
+  {
+    moveBaseAtSpeed(leftCourseBasePickupAngle, 5);
+  }
+  delay(200);
+
+  for (int angle = 0; angle < backarmGrabAngle; angle++)
+  {
+    moveBackarmAtSpeed(angle, 5);
+    float factor = forearmGrabAngle/backarmGrabAngle;
+    moveForearmAtSpeed(180 - angle*factor, 5); //forearmstarts at 180
+  }
+
+  motor.speed(2, 255);
+  delay(closeTime);
+  motor.speed(2, 50);
   liftAndDropIntoBin();
 }
 
 void pickUpAgentTwo() {
   //lower claw to lowest position
-  positionAndGrab(1);
+  if (course == 0 || course == 1)
+  {
+    moveBaseAtSpeed(rightCourseBasePickupAngle, 5);
+  }
+  else
+  {
+    moveBaseAtSpeed(leftCourseBasePickupAngle, 5);
+  }
+  delay(200);
+
+  for (int angle = 0; angle < backarmGrabAngle; angle++)
+  {
+    moveBackarmAtSpeed(angle, 5);
+    float factor = forearmGrabAngle/backarmGrabAngle;
+    moveForearmAtSpeed(180 - angle*factor, 5); //forearmstarts at 180
+  }
+
+  motor.speed(2, 255);
+  delay(closeTime);
+  motor.speed(2, 50);
   liftAndDropIntoBin();
 }
 
 void pickUpAgentThree() {
   //lower claw to highest position
-  positionAndGrab(3);
+  if (course == 0 || course == 1)
+  {
+    moveBaseAtSpeed(rightCourseBasePickupAngle, 5);
+  }
+  else
+  {
+    moveBaseAtSpeed(leftCourseBasePickupAngle, 5);
+  }
+  delay(200);
+
+  for (int angle = 0; angle < backarmGrabAngle; angle++)
+  {
+    moveBackarmAtSpeed(angle, 5);
+    float factor = forearmGrabAngle/backarmGrabAngle;
+    moveForearmAtSpeed(180 - angle*factor, 5); //forearmstarts at 180
+  }
+
+  motor.speed(2, 255);
+  delay(closeTime);
+  motor.speed(2, 50);
   liftAndDropIntoBin();
 }
 
 void pickUpAgentFour() {
   //lower claw to medium position
-  positionAndGrab(2);
+  if (course == 0 || course == 1)
+  {
+    moveBaseAtSpeed(rightCourseBasePickupAngle, 5);
+  }
+  else
+  {
+    moveBaseAtSpeed(leftCourseBasePickupAngle, 5);
+  }
+  delay(200);
+
+  for (int angle = 0; angle < backarmGrabAngle; angle++)
+  {
+    moveBackarmAtSpeed(angle, 5);
+    float factor = forearmGrabAngle/backarmGrabAngle;
+    moveForearmAtSpeed(180 - angle*factor, 5); //forearmstarts at 180
+  }
+
+  motor.speed(2, 255);
+  delay(closeTime);
+  motor.speed(2, 50);
   liftAndDropIntoBin();
 }
 
 void pickUpAgentFive() {
   //lower claw to lowest position
-  positionAndGrab(1);
+  if (course == 0 || course == 1)
+  {
+    moveBaseAtSpeed(rightCourseBasePickupAngle, 5);
+  }
+  else
+  {
+    moveBaseAtSpeed(leftCourseBasePickupAngle, 5);
+  }
+  delay(200);
+
+  for (int angle = 0; angle < backarmGrabAngle; angle++)
+  {
+    moveBackarmAtSpeed(angle, 5);
+    float factor = forearmGrabAngle/backarmGrabAngle;
+    moveForearmAtSpeed(180 - angle*factor, 5); //forearmstarts at 180
+  }
+
+  motor.speed(2, 255);
+  delay(closeTime);
+  motor.speed(2, 50);
   liftAndDropIntoBin();
 }
 
 void pickUpAgentSix() {
   //lower claw to highest position
-  positionAndGrab(3);
+  if (course == 0 || course == 1)
+  {
+    moveBaseAtSpeed(rightCourseBasePickupAngle, 5);
+  }
+  else
+  {
+    moveBaseAtSpeed(leftCourseBasePickupAngle, 5);
+  }
+  delay(200);
+
+  for (int angle = 0; angle < backarmGrabAngle; angle++)
+  {
+    moveBackarmAtSpeed(angle, 5);
+    float factor = forearmGrabAngle/backarmGrabAngle;
+    moveForearmAtSpeed(180 - angle*factor, 5); //forearmstarts at 180
+  }
+
+  motor.speed(2, 255);
+  delay(closeTime);
+  motor.speed(2, 50);
   liftAndDropIntoBin();
 }
-//----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void positionAndGrab(int position) { // 1 to 3, 1 lowest 3 highest
-  if (course == 0 || course == 1) {
-    baseServoPosition(20, 5);
-  }
-  else {
-    baseServoPosition(180, 5);
-  }
-  delay(300);
-
-  int backarmAngle = 0;
-  int forearmAngle = 0; //change 
-  if (position == 1) backarmAngle = 130; forearmAngle = 50; //change 
-  if (position == 2) backarmAngle = 130; forearmAngle = 50; // change
-  if (position == 3) backarmAngle = 130; forearmAngle = 50;// change
-
-  backArmForeArmPosition(backarmAngle, forearmAngle, 5); //move both same time, delay time of 5 ms
-  
-  delay(500);
-  motor.speed(2, 255);
-  delay(2500);
-  motor.speed(2,50);
-}
-//------------------------------------------------------------------------------------------------------------------
-void baseServoPosition(int baseAngle, int delayTime) { //delayTime is how slow we want it to move
-  for(int angle = 0; angle <= baseAngle; angle++) { 
-    baseServo.write(angle);
-    delay(delayTime);
-  }
-}
-
-void foreArmPosition( int foreArmAngle, int delayTime) {
-  for(int angle = 0; angle <=foreArmAngle; angle++) {
-    if(angle > foreArmAngle) RCServo2.write(180+foreArmAngle-angle);
-    delay(delayTime);
-  }
-}
-
-void backArmPosition(int backArmAngle, int delayTime) {
-  LCD.clear(); LCD.home();
-  LCD.print("11");
-  for (int angle = 0; angle <=backArmAngle; angle++) {
-    RCServo0.write(angle);
-    RCServo1.write(180-angle);
-    LCD.clear(); LCD.home();
-    LCD.print("12");
-    delay(delayTime);
-  }
-  LCD.clear(); LCD.home();
-  LCD.print("13");
-}
-
-void backArmForeArmPosition( int backArmAngle, int foreArmAngle,int delayTime) {  //moving both forearm and back arm same time
-  for(int angle = 0; angle <=backArmAngle; angle++) {
-    RCServo0.write(angle);
-    RCServo1.write(180-angle);
-    if(angle > foreArmAngle) RCServo2.write(180+foreArmAngle-angle);
-    delay(delayTime);
-  }
-}
-
 
 void liftAndDropIntoBin()
 {
-  int backarmAngle = 0;
-  backArmPosition(backarmAngle, 5);
-  delay(1000);
-  foreArmPosition(180, 5);
-  baseServoPosition(90, 5);
-  delay(500);
+  moveBackarmAtSpeed(0, 8);
+  moveForearmAtSpeed(180, 5);
+  moveBaseAtSpeed(100, 20);
+  
   motor.speed(2, -255);
-  delay(2500);
+  delay(openTime);
   motor.speed(2, 0);
 }
+
+void moveForearmAtSpeed(int angle, int delayTime)
+{
+  int startAngle = RCServo2.read();
+  if(startAngle < angle)
+  {
+    for (int currentAngle = startAngle; currentAngle < angle; currentAngle++)
+    {
+      RCServo2.write(currentAngle);
+      delay(delayTime);
+    }
+  }
+  else {
+    for (int currentAngle = startAngle; currentAngle > angle; currentAngle--)
+    {
+      RCServo2.write(currentAngle);
+      delay(delayTime);
+    }
+  }
+}
+
+void moveBackarmAtSpeed(int angle, int delayTime)
+{
+  int startAngle = RCServo0.read();
+  if(startAngle < angle)
+  {
+    for (int currentAngle = startAngle; currentAngle < angle; currentAngle++)
+    {
+      RCServo0.write(currentAngle);
+      RCServo1.write(180-currentAngle);
+      delay(delayTime);
+    }
+  }
+  else {
+    for (int currentAngle = startAngle; currentAngle > angle; currentAngle--)
+    {
+      RCServo0.write(currentAngle);
+      RCServo1.write(180-currentAngle);
+      delay(delayTime);
+    }
+  }
+}
+
+void moveBaseAtSpeed(int angle, int delayTime)
+{
+  int startAngle = baseServo.read();
+  if(startAngle < angle)
+  {
+    for (int currentAngle = startAngle; currentAngle < angle; currentAngle++)
+    {
+      baseServo.write(currentAngle);
+      delay(delayTime);
+    }
+  }
+  else {
+    for (int currentAngle = startAngle; currentAngle > angle; currentAngle--)
+    {
+      baseServo.write(currentAngle);
+      delay(delayTime);
+    }
+  }
+}
+
