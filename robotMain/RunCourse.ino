@@ -59,51 +59,64 @@ void tapeFollow()
     }
     if ((leftO > threshold) && (leftI < threshold)) {
       error = -3;
-      currentSPEED = 0.75 * SPEED;
+      currentSPEED = 0.9 * SPEED;
     }
     if ((rightI < threshold) && (rightO > threshold)) {
       error = +3;
-      currentSPEED = 0.75 * SPEED;
+      currentSPEED = 0.9 * SPEED;
     }
     if ((leftO < threshold) && (leftI < threshold)) {
       if ((rightI < threshold) && (rightO < threshold)) {
         if (lasterror > 0) error = 5;
         if (lasterror <= 0) error = -5;
-        currentSPEED = 0.8 * SPEED;
+        currentSPEED = 0.9 * SPEED;
       }
     }
-    if ((leftI > threshold) && (rightI > threshold) && (rightO > threshold) && (leftO < threshold) && (markcount > 7)) //three sensor see something, this is the circle start after looped around the tank
+    if ((leftI > threshold) && (rightI > threshold) && (rightO > threshold) && (leftO < threshold) && (markcount > 6)) //three sensor see something, this is the circle start after looped around the tank
     {
-      error = 1;
-      currentSPEED = 0.75 * SPEED;
-      delay(20);
+          motor.speed(0, currentSPEED*.4 + sharpLeftControl); //right motor (looking at tina)
+          motor.speed(1, currentSPEED*1.2 + sharpLeftControl);  //left motor
+          delay(100);
+          error = -2;
+          SPEED = SPEED*.7;
     }
-    if ((leftI > threshold) && (rightI > threshold) && (leftO > threshold) && (rightO < threshold) && (markcount > 7)) //three sensor see something, this is the circle start after looped around the tank
+    if ((leftI > threshold) && (rightI > threshold) && (leftO > threshold) && (rightO < threshold) && (markcount > 6)) //three sensor see something, this is the circle start after looped around the tank
     {
-      error = -1;
-      currentSPEED = 0.75 * SPEED;
-      delay(20);
+          motor.speed(0, -currentSPEED*.4 + sharpRightControl); //right motor (looking at tina)
+          motor.speed(1, -currentSPEED*1.2 + sharpRightControl);  //left motor
+          delay(100);
+          error = +2;
+          SPEED = SPEED*.7;
     }
     if ((leftI > threshold) && (rightI > threshold) && (rightO > threshold) && (leftO > threshold)) { //all sensor see something
+      if (markcount == 0)
+      {
+        hillIRDelayStart = millis();
+      }
       if (millis() - hillIRDelayStart > 1000 && markcount != 0)
       {
+        LCD.clear(); LCD.home();
+        LCD.print(hillIRDelayStart); 
         error = +100; //100 means stop
-        if (markcount > 7)
+        if (markcount > 6)
         {
           markcount++;
           if (course == 0 || course == 1)
           {
-            error = -1;
+            error = -3;
             delay(20);
           }
           else
           {
-            error = +1;
+            error = +3;
             delay(20);
           }
         }
       }
       else {
+        LCD.clear(); LCD.home();
+        LCD.print("HILL ERROR");        
+        markcount = 1;
         error = 0;
         delay(20);
       }
@@ -152,33 +165,29 @@ void tapeFollow()
     }
     //--------------------------------------------------------------------------------------------------------
     else {
-      if (markcount == 0)
-      {
-        hillIRDelayStart = millis();
-      }
-      if (markcount == 1) {
-        LCD.clear(); LCD.home();
-        LCD.print("mark -> ");
-        LCD.print(markcount);
-        motor.speed(0, +200);
-        motor.speed(1, -200);
-        if(course == 1 || course == 0)
-        {
-          motor.speed(0, -currentSPEED*.4 + sharpRightControl); //right motor (looking at tina)
-          motor.speed(1, -currentSPEED*1.2 + sharpRightControl);  //left motor
-          //lasterror = +3;
-          //delay(1000);
-        }
-        else
-        {
-          motor.speed(0, currentSPEED*.4 + sharpLeftControl); //right motor (looking at tina)
-          motor.speed(1, currentSPEED*1.2 + sharpLeftControl);  //left motor
-          //lasterror = -3;
-          //delay(1000);
-        }
-        delay(100);
-      }
-      if (markcount > 1 && markcount <= 6) {
+//      if (markcount == 1) {
+//        LCD.clear(); LCD.home();
+//        LCD.print("mark -> ");
+//        LCD.print(markcount);
+//        motor.speed(0, +200);
+//        motor.speed(1, -200);
+//        if(course == 1 || course == 0)
+//        {
+//          motor.speed(0, -currentSPEED*.4 + sharpRightControl); //right motor (looking at tina)
+//          motor.speed(1, -currentSPEED*1.2 + sharpRightControl);  //left motor
+//          //lasterror = +3;
+//          //delay(1000);
+//        }
+//        else
+//        {
+//          motor.speed(0, currentSPEED*.4 + sharpLeftControl); //right motor (looking at tina)
+//          motor.speed(1, currentSPEED*1.2 + sharpLeftControl);  //left motor
+//          //lasterror = -3;
+//          //delay(1000);
+//        }
+//        delay(100);
+//      }
+      if (markcount > 0 && markcount <= 6) {
         motor.speed(0, +200);
         motor.speed(1, -200);
         delay(20);
@@ -214,7 +223,7 @@ void tapeFollow()
         LCD.print("le -> ");
         LCD.print(lasterror);
         delay(1000);
-        if (markcount == 2)
+        if (markcount == 1)
         {
           if (course == 0 || course == 1)
           {
@@ -224,14 +233,14 @@ void tapeFollow()
             lasterror = 3;
           }
         }
-//        if (markcount == 2) pickUpAgentOne();
-//        if (markcount == 3) pickUpAgentTwo();
-//        if (markcount == 4) pickUpAgentThree();
-//        if (markcount == 5) pickUpAgentFour();
-//        if (markcount == 6) pickUpAgentFive();
-//        if (markcount == 7) pickUpAgentSix();
+        if (markcount == 2) pickUpAgentOne();
+        if (markcount == 3) pickUpAgentTwo();
+        if (markcount == 4) pickUpAgentThree();
+        if (markcount == 5) pickUpAgentFour();
+        if (markcount == 6) pickUpAgentFive();
+        if (markcount == 7) pickUpAgentSix();
       }
-      if (markcount == 9) //can change, this is the mark we go to before we go to the zipline
+      if (markcount == 8) //can change, this is the mark we go to before we go to the zipline
       {
         LCD.clear(); LCD.home();
         LCD.print("mark -> ");
