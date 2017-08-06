@@ -9,22 +9,47 @@
 
 bool strategyIsSet = false;
 int course = 0; //0 = no course, 1 = right, 2 = left
+
+//tapeFollowing
 float kp = 40; //30
 float kd = 45; //40
 int threshold = 60; //tape following
 int gain = 1;
 int SPEED = 250; //200
 int currentSPEED = SPEED;
+
+int bounceCount = 24;
+
 bool pastGate = false; 
 float tenkhzThresh = 20; //change
 float onekhzThresh = 20; //change
 ServoTINAH baseServo;
 
+volatile unsigned long left_bounce = 0;
+volatile unsigned long right_bounce = 0;
 volatile unsigned long left_rotations = 0;
 volatile unsigned long right_rotations = 0;
+volatile int leftLastState = LOW;
+volatile int rightLastState = LOW;
+volatile int leftState = LOW;
+volatile int rightState = LOW;
 
-ISR(INT0_vect) {left_rotations++;}
-ISR(INT2_vect) {right_rotations++;}
+ISR(INT0_vect){
+  rightLastState = HIGH;
+  int count = 0;
+  right_rotations++;
+  while(count <= bounceCount){
+      rightState = digitalRead(0);
+      if(rightState == rightLastState && rightState == LOW){count++;}
+      else{count=0;}
+      rightLastState = rightState;
+    }
+}
+ISR(INT2_vect){
+   left_rotations++;
+   delay(2);
+}
+
 
 void enableExternalInterrupt(unsigned int INTX, unsigned int mode) {
   if (INTX > 3 || mode > 3 || mode == 1) return;
@@ -55,13 +80,8 @@ void setup()
   delay(500);
   baseServo.write(0);  
 
-
-  //DELETE_______
-  motor.speed(2, -255);
-  delay(2000);
-  motor.speed(2, 0);
-  //______________
   
+  stopMotors();
   Serial.begin(9600);
 
   enableExternalInterrupt(INT0, RISING);
@@ -74,7 +94,7 @@ void loop()
   //pickUpAgentOne();
 
   
-  //mainMenu();
+  mainMenu();
 //  for (int i = 0; i <6; i++)
 //  {
 //    servos[i].write(90);

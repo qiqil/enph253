@@ -25,7 +25,9 @@ void mainMenu()
       while(digitalRead(50) == LOW){}
       if(select == 1)
       {
-        driveStraight(6000, 150);
+        //encoderTestor();
+        motor.speed(0, 200);
+        //driveStraight(150000, 130);
         //runCourse();
       }
       else if(select == 2)
