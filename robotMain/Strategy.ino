@@ -1,5 +1,4 @@
-void strategyMenu()
-{
+void strategyMenu() {
   while(digitalRead(49) == HIGH)
   {
     float angle = analogRead(6)/(1023.0/180.0);

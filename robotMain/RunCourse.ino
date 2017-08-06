@@ -297,7 +297,7 @@ void tapeFollow()
       gateCheck();
     }
   }
-}
+
 
 void gateCheck() {
   //irSensor1 = analogRead(4);
@@ -337,7 +337,7 @@ void gateCheck() {
       LCD.print("1");
       delay(100);
 
-      while((analogRead(4) < onekhzThresh) && (analogRead(5) >= tenkhzThresh) && pastGate = true)
+      while((analogRead(4) < onekhzThresh) && (analogRead(5) >= tenkhzThresh) && pastGate == true)
       {
         delay(10);
       }

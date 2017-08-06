@@ -25,7 +25,8 @@ void mainMenu()
       while(digitalRead(50) == LOW){}
       if(select == 1)
       {
-        runCourse();
+        driveStraight(6000, 150);
+        //runCourse();
       }
       else if(select == 2)
       {
