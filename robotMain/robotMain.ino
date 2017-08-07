@@ -34,17 +34,10 @@ volatile int rightLastState = LOW;
 volatile int leftState = LOW;
 volatile int rightState = LOW;
 
-ISR(INT0_vect){
-  rightLastState = HIGH;
-  int count = 0;
+ISR(INT1_vect){
   right_rotations++;
-  while(count <= bounceCount){
-      rightState = digitalRead(0);
-      if(rightState == rightLastState && rightState == LOW){count++;}
-      else{count=0;}
-      rightLastState = rightState;
+  delay(5);
     }
-}
 ISR(INT2_vect){
    left_rotations++;
    delay(2);
@@ -84,8 +77,12 @@ void setup()
   stopMotors();
   Serial.begin(9600);
 
-  enableExternalInterrupt(INT0, RISING);
+  
+  
+  //enableExternalInterrupt(INT0, RISING);
+  enableExternalInterrupt(INT1, RISING);
   enableExternalInterrupt(INT2, RISING);
+  
 }
  
 void loop()

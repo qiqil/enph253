@@ -10,12 +10,13 @@ void encoderTestor(){
     LCD.print(right_rotations);
     LCD.setCursor(7, 1);
     LCD.print(left_rotations);
-    delay(50);
 
     if(digitalRead(50) == LOW){
       left_rotations = 0;
       right_rotations = 0;
     }
+
+    if(right_rotations >= 8800){stopMotors();}
   }
 }
 
