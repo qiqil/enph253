@@ -80,6 +80,7 @@ void brake(int speed, String dir){
 //+ angle is CW
 void rotate(int angle){
   resetRotations();
+  stopMotors();
   
   if (angle == 0) return;
 
