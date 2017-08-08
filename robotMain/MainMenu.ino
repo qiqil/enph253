@@ -25,11 +25,11 @@ void mainMenu()
       while(digitalRead(50) == LOW){}
       if(select == 1)
       {
-        motor.speed(0, 255);
-        
-        encoderTestor();
-        //motor.speed(0, 150);
-        //driveStraight(150000, 130);
+        driveStraight(1500, 150);
+        delay(2000);
+        rotate(180);
+        delay(2000);
+        rotate(-180);
         //runCourse();
       }
       else if(select == 2)

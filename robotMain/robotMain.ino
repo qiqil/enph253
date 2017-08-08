@@ -25,24 +25,13 @@ float tenkhzThresh = 20; //change
 float onekhzThresh = 20; //change
 ServoTINAH baseServo;
 
-volatile unsigned long left_bounce = 0;
-volatile unsigned long right_bounce = 0;
 volatile unsigned long left_rotations = 0;
 volatile unsigned long right_rotations = 0;
-volatile int leftLastState = LOW;
-volatile int rightLastState = LOW;
-volatile int leftState = LOW;
-volatile int rightState = LOW;
 
-ISR(INT1_vect){
-  right_rotations++;
-  delay(5);
-    }
-ISR(INT2_vect){
-   left_rotations++;
-   delay(2);
-}
-
+ISR(INT0_vect){}
+ISR(INT1_vect){right_rotations++;}
+ISR(INT2_vect){}
+ISR(INT3_vect){left_rotations++;}
 
 void enableExternalInterrupt(unsigned int INTX, unsigned int mode) {
   if (INTX > 3 || mode > 3 || mode == 1) return;
@@ -77,11 +66,10 @@ void setup()
   stopMotors();
   Serial.begin(9600);
 
-  
-  
-  //enableExternalInterrupt(INT0, RISING);
+  enableExternalInterrupt(INT0, RISING);
   enableExternalInterrupt(INT1, RISING);
   enableExternalInterrupt(INT2, RISING);
+  enableExternalInterrupt(INT3, RISING);
   
 }
  
