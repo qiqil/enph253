@@ -1,10 +1,11 @@
 //Encoder Based Movements
 const int eKd = 15; //8
-const int eKp = 10;
 const int eKi = 30;
 const int integralLimit = 60;
 const int stepSize = 1;
 const int MAX_SPEED = 255;
+
+void brake(int speed = MAX_SPEED, String dir = "FWD");
 
 void stopMotors (){
   motor.speed(0, 0);
@@ -25,14 +26,6 @@ void driveStraight(unsigned long distance, int speed){
     LCD.setCursor(7, 0); LCD.print(speed-control);
     LCD.setCursor(0, 1); LCD.print(right_rotations);
     LCD.setCursor(7, 1); LCD.print(speed+control);
-
-//    //trouble shooting POS
-//    char buffer [100];
-//    int output = sprintf(buffer, "Control is: %d, Integral is : %d", control, I);
-//    for(int i = 0; i <= output; i++){
-//      Serial.print(buffer[i]);
-//    }
-    Serial.println(integralControl);
  
     control = 0;
     if (left_rotations > right_rotations + stepSize) {
@@ -66,8 +59,21 @@ void reverse(unsigned long distance, int speed){
   
 }
 
-void brake(){
-  
+//Braking for constant time, write REV if reversing, else leave void
+//specify speed unless maxSpeed is desired
+void brake(int speed, String dir){
+  if (dir.equals("FWD")){
+    moveRightMotor(-speed);
+    moveLeftMotor(-speed);
+    delay(10);
+  }
+  else if (dir.equals("REV")){
+    moveRightMotor(speed);
+    moveLeftMotor(speed);
+    delay(10);
+  }
+
+  stopMotors();
 }
 
 //left wheel = 0, right wheel = 1
