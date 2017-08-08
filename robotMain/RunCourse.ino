@@ -4,7 +4,7 @@ int hillIRDelayStart = 0;
 
 void runCourse()
 {
-  pastGate = 0;
+  pastGate = false;
   LCD.clear(); LCD.home();
   LCD.print("Tape Following");
   moveArmToStartPosition();
@@ -28,7 +28,7 @@ void tapeFollow()
 
   while (digitalRead(49) == HIGH)
   {
-    if(pastGate == 0) {
+    if(pastGate == false) {
       gateCheck();
     }
     ki = 0;
@@ -136,7 +136,7 @@ void tapeFollow()
 
     control = gain * (P + D + I);
 
-    if(pastGate == 0) {
+    if(pastGate == false) {
       gateCheck();
     }
 
@@ -254,11 +254,11 @@ void tapeFollow()
       markcount++;
     }
     //--------------------------------------------------------------------------------------------------------
-    if(pastGate == 0) {
+    if(pastGate == false) {
       gateCheck();
     }
   }
-}
+
 
 void gateCheck() {
   //irSensor1 = analogRead(4);
@@ -280,7 +280,7 @@ void gateCheck() {
       while((analogRead(4) < onekhzThresh) && analogRead(5) >= tenkhzThresh)
       {
         delay(10);
-        pastGate++;
+        pastGate = true;
       }
    }
     else if ( (analogRead(5) < analogRead(4)) && (analogRead(4) >= onekhzThresh)) {
@@ -290,12 +290,12 @@ void gateCheck() {
       while((analogRead(5) < analogRead(4)) && (analogRead(4) >= onekhzThresh))
       {
         delay(10);
-        pastGate++;
+        pastGate = true;
       }
       LCD.clear(); LCD.home();
       LCD.print("1");
       delay(100);
-      while((analogRead(4) < onekhzThresh) && (analogRead(5) >= tenkhzThresh) && pastGate != 0)
+      while((analogRead(4) < onekhzThresh) && (analogRead(5) >= tenkhzThresh) && pastGate == true)
       {
         delay(10);
       }
