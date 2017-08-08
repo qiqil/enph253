@@ -17,9 +17,7 @@ int threshold = 60; //tape following
 int gain = 1;
 int SPEED = 250; //200
 int currentSPEED = SPEED;
-
 int bounceCount = 24;
-
 bool pastGate = false; 
 float tenkhzThresh = 20; //change
 float onekhzThresh = 20; //change
@@ -62,24 +60,22 @@ void setup()
   delay(500);
   baseServo.write(0);  
 
-  
-  stopMotors();
+    stopMotors();
   Serial.begin(9600);
 
   enableExternalInterrupt(INT0, RISING);
   enableExternalInterrupt(INT1, RISING);
   enableExternalInterrupt(INT2, RISING);
   enableExternalInterrupt(INT3, RISING);
-  
 }
  
 void loop()
 { 
   //delay(2000);
-  //pickUpAgentOne();
-
-  
-  mainMenu();
+  pickUpAgentOne();
+  grabZiplineMechanismAndLift();
+ 
+  //mainMenu();
 //  for (int i = 0; i <6; i++)
 //  {
 //    servos[i].write(90);
