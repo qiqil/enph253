@@ -4,12 +4,12 @@
 // digital pin - base - 0 = pointing left facing TINAH
 int backarmRestAngle = 90;
 int baseRestAngle = 104;
-int rightCourseBasePickupAngle = 20;
-int leftCourseBasePickupAngle = 165;
+int rightCourseBasePickupAngle = 10;
+int leftCourseBasePickupAngle = 170;
 int closeTime = 3800;
 int openTime = 3800;
 float backarmGrabAngle = 90;
-float forearmGrabAngle = 80;
+float forearmGrabAngle = 130;
 float backarmZiplineGrabAngle = 60;
 float forearmZiplineGrabAngle = 120;
 

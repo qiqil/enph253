@@ -22,7 +22,7 @@ void tapeFollow()
   int recenterr = 0;
   int q = 1;
   int count = 0;
-  int markcount = 0;
+  int markcount = 0; //CHANGE THIS LATER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   int sharpRightControl = 400;
   int sharpLeftControl = -400;
 
@@ -58,51 +58,65 @@ void tapeFollow()
       currentSPEED = 0.9 * SPEED;
     }
     if ((leftO > threshold) && (leftI < threshold)) {
-      error = -3;
+      error = -4;
       currentSPEED = 0.9 * SPEED;
     }
     if ((rightI < threshold) && (rightO > threshold)) {
-      error = +3;
+      error = +4;
       currentSPEED = 0.9 * SPEED;
     }
     if ((leftO < threshold) && (leftI < threshold)) {
       if ((rightI < threshold) && (rightO < threshold)) {
-        if (lasterror > 0) error = 5;
-        if (lasterror <= 0) error = -5;
+        if (lasterror > 0) error = 6;
+        if (lasterror <= 0) error = -6;
         currentSPEED = 0.9 * SPEED;
       }
     }
-    if ((leftI > threshold) && (rightI > threshold) && (rightO > threshold) && (leftO < threshold) && (markcount > 6)) //three sensor see something, this is the circle start after looped around the tank
-    {
-      if(course == 0 || course == 1)
-      {
-        rotate(80);
-      }
-      else {
-        rotate(-80);
-      }
-          delay(100);
-          error = -2;
-          SPEED = SPEED*.7;
-    }
-    if ((leftI > threshold) && (rightI > threshold) && (leftO > threshold) && (rightO < threshold) && (markcount > 6)) //three sensor see something, this is the circle start after looped around the tank
-    {
-      if(course == 0 || course == 1)
-      {
-        rotate(80);
-      }
-      else {
-        rotate(-80);
-      }
-      delay(100);
-      error = +2;
-      SPEED = SPEED*.7;
-    }
+//    if ((leftI > threshold) && (rightI > threshold) && (rightO > threshold) && (leftO < threshold) && (markcount > 6)) //three sensor see something, this is the circle start after looped around the tank
+//    {
+//      stopMotors();
+//      if (course == 0 || course == 1)
+//      {
+//        rotate(45);
+//      }
+//      else {
+//        rotate(-45);
+//      }
+//      delay(100);
+//      error = -2;
+//      SPEED = SPEED*.7;
+//    }
+//    if ((leftI > threshold) && (rightI > threshold) && (leftO > threshold) && (rightO < threshold) && (markcount > 6)) //three sensor see something, this is the circle start after looped around the tank
+//    {
+//      stopMotors();
+//      if (course == 0 || course == 1)
+//      {
+//        rotate(45);
+//      }
+//      else {
+//        rotate(-45);
+//      }
+//      delay(100);
+//      error = +2;
+//      SPEED = SPEED*.7;
+//    }
     if ((leftI > threshold) && (rightI > threshold) && (rightO > threshold) && (leftO > threshold)) { //all sensor see something
       if (markcount == 0)
       {
-        driveStraight(30,200);
+        LCD.clear(); LCD.home();
+        LCD.print("CircleEntrance");
+        stopMotors();
+        delay(100);
         markcount++;
+        if(course == 1 || course == 0)
+        {
+          rotate(55, 130);
+          error = -3;
+        }
+        else {
+          rotate(-55, 130);
+          error = +3;
+        }
       }
       else
       {
@@ -166,27 +180,15 @@ void tapeFollow()
     }
     //--------------------------------------------------------------------------------------------------------
     else {
-//      if (markcount == 1) {
-//        LCD.clear(); LCD.home();
-//        LCD.print("mark -> ");
-//        LCD.print(markcount);
-//        motor.speed(0, +200);
-//        motor.speed(1, -200);
+//      if (markcount == 1)
+//      {
 //        if(course == 1 || course == 0)
 //        {
-//          motor.speed(0, -currentSPEED*.4 + sharpRightControl); //right motor (looking at tina)
-//          motor.speed(1, -currentSPEED*1.2 + sharpRightControl);  //left motor
-//          //lasterror = +3;
-//          //delay(1000);
+//          rotate(65);
 //        }
-//        else
-//        {
-//          motor.speed(0, currentSPEED*.4 + sharpLeftControl); //right motor (looking at tina)
-//          motor.speed(1, currentSPEED*1.2 + sharpLeftControl);  //left motor
-//          //lasterror = -3;
-//          //delay(1000);
+//        else {
+//          rotate(-65);
 //        }
-//        delay(100);
 //      }
       if (markcount > 0 && markcount <= 6) {
         motor.speed(0, -200);
@@ -206,12 +208,12 @@ void tapeFollow()
         if ((leftI < threshold) && (rightI > threshold) && (rightO < threshold)) lasterror = +1;
         if ((leftI > threshold) && (leftO > threshold)) lasterror = -2;
         if ((rightI > threshold) && (rightO > threshold)) lasterror = +2;
-        if ((leftO > threshold) && (leftI < threshold)) lasterror = -3;
-        if ((rightI < threshold) && (rightO > threshold)) lasterror = +3;
+        if ((leftO > threshold) && (leftI < threshold)) lasterror = -4;
+        if ((rightI < threshold) && (rightO > threshold)) lasterror = +4;
         if ((leftO < threshold) && (leftI < threshold)) {
           if ((rightI < threshold) && (rightO < threshold)) {
-            if (lasterror > 0) lasterror = 5;
-            if (lasterror <= 0) lasterror = -5;
+            if (lasterror > 0) lasterror = 6;
+            if (lasterror <= 0) lasterror = -6;
           }
         }
         delay(10); //time reverse
@@ -234,13 +236,25 @@ void tapeFollow()
             lasterror = 3;
           }
         }
-        if (markcount == 1) pickUpAgentOne();
-        if (markcount == 2) pickUpAgentTwo();
-        if (markcount == 3) pickUpAgentThree();
-        if (markcount == 4) pickUpAgentFour();
-        if (markcount == 5) pickUpAgentFive();
+        
+//        if (markcount == 1) {
+//          stopMotors();
+//          if (course == 0 || course == 1)
+//          {
+//            rotate(45);
+//          }
+//          else {
+//            rotate(-45);
+//          }
+//        }
+
+        if (markcount == 1);//pickUpAgentOne();
+        if (markcount == 2);// pickUpAgentOne();
+        if (markcount == 3);// pickUpAgentOne();
+        if (markcount == 4);// pickUpAgentOne();
+        if (markcount == 5);// pickUpAgentOne();
         if (markcount == 6) {
-          pickUpAgentSix();
+          //pickUpAgentOne();
           driveToZipline();
         }
       }
@@ -311,26 +325,37 @@ void driveToZipline() {
   LCD.print("Finding");
   LCD.setCursor(0,1);
   LCD.print("zipline");
-
-  reverse(200, 150);
+  reverse(27, 130);
+  delay(1000);
   if (course == 1 || course == 0)
   {
-    rotate(45);
-    delay(300);
+    rotate(60, 150);
+    delay(500);
   }
   else
   {
-    rotate(-45);
-    delay(300);
+    rotate(-70, 150);
+    delay(500);
   }
   
+  reverse(100, 130);
+  delay(500);
+  if (course == 1 || course == 0)
+  {
+    rotate(45, 150);
+    delay(500);
+  }
+  else
+  {
+    rotate(-45, 150);
+    delay(300);
+  }
   grabZiplineMechanismAndLift();
-  reverse(90, 130);
+  reverse(210, 130);
   motor.speed(2, -255);
   delay(openTime);
   motor.speed(2, 0);
   driveStraight(25, 130);
   stopMotors();
-
 }
 

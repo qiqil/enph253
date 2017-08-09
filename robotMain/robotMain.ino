@@ -11,16 +11,16 @@ bool strategyIsSet = false;
 int course = 0; //0 = no course, 1 = right, 2 = left
 
 //tapeFollowing
-float kp = 40; //30
-float kd = 45; //40
-int threshold = 60; //tape following
+float kp = 30; //30
+float kd = 40; //40
+int threshold = 200; //tape following
 int gain = 1;
-int SPEED = 250; //200
+int SPEED = 230; //200
 int currentSPEED = SPEED;
 int bounceCount = 24;
 bool pastGate = false; 
-float tenkhzThresh = 20; //change
-float onekhzThresh = 20; //change
+float tenkhzThresh = 25; //change
+float onekhzThresh = 25; //change
 ServoTINAH baseServo;
 
 volatile unsigned long left_rotations = 0;
@@ -59,9 +59,9 @@ void setup()
   RCServo1.write(180);
   delay(500);
   baseServo.write(0);  
-  motor.speed(2, -255);
-  delay(3500);
-  motor.speed(2, 0);
+//  motor.speed(2, -255);
+//  delay(3500);
+//  motor.speed(2, 0);
   stopMotors();
   Serial.begin(9600);
 
@@ -74,10 +74,36 @@ void setup()
 void loop()
 { 
   //delay(2000);
-  //reverse(200, 150);
-  //rotate(45);
-  //reverse(90, 130);
-  //delay(5000);
+//  reverse(27, 130);
+//  delay(1000);
+//  if (course == 1 || course == 0)
+//  {
+//    rotate(60, 150);
+//    delay(500);
+//  }
+//  else
+//  {
+//    rotate(-70, 150);
+//    delay(500);
+//  }
+//  
+//  reverse(100, 130);
+//  delay(500);
+//  if (course == 1 || course == 0)
+//  {
+//    rotate(45, 150);
+//    delay(500);
+//  }
+//  else
+//  {
+//    rotate(-45, 150);
+//    delay(300);
+//  }
+//  grabZiplineMechanismAndLift();
+//  reverse(210, 130);
+//  LCD.clear(); LCD.home();
+//  LCD.print("done");
+//  delay(3000);
   //pickUpAgentOne();
   //grabZiplineMechanismAndLift();
  

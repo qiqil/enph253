@@ -169,7 +169,7 @@ void thresholdMenu()
   float value;
   while(digitalRead(49) == HIGH)
   {
-    value = analogRead(6)/5;
+    value = analogRead(6)/2;
     LCD.clear(); LCD.home();
     LCD.print("threshold: ");
     LCD.print(value);
