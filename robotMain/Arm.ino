@@ -4,14 +4,14 @@
 // digital pin - base - 0 = pointing left facing TINAH
 int backarmRestAngle = 90;
 int baseRestAngle = 104;
-int rightCourseBasePickupAngle = 33;
+int rightCourseBasePickupAngle = 20;
 int leftCourseBasePickupAngle = 165;
-int closeTime = 4000;
-int openTime = 4000;
-int backarmGrabAngle = 100;
-int forearmGrabAngle = 110;
-int backarmZiplineGrabAngle = 20;
-int forearmZiplineGrabAngle = 150;
+int closeTime = 3800;
+int openTime = 3800;
+float backarmGrabAngle = 90;
+float forearmGrabAngle = 80;
+float backarmZiplineGrabAngle = 60;
+float forearmZiplineGrabAngle = 120;
 
 void moveArmToStartPosition()
 {
@@ -26,13 +26,13 @@ void grabZiplineMechanismAndLift()
 {
     moveBackarmAtSpeed(0, 5);
     moveBaseAtSpeed(120, 10);
-    moveForearmAtSpeed(180, 5);
+    moveForearmAtSpeed(0, 5);
 
     for (int angle = 0; angle < backarmZiplineGrabAngle; angle++)
     {
       moveBackarmAtSpeed(angle, 5);
-      float factor = forearmZiplineGrabAngle/backarmZiplineGrabAngle;
-      moveForearmAtSpeed(180 - angle*factor, 5); //forearmstarts at 180
+      float factor = (forearmZiplineGrabAngle)/backarmZiplineGrabAngle;
+      moveForearmAtSpeed(angle*factor, 5); //forearmstarts at 180
     }
 
     motor.speed(2, 255);
@@ -65,7 +65,7 @@ void pickUpAgentOne() {
   for (int angle = 0; angle < backarmGrabAngle; angle++)
   {
     moveBackarmAtSpeed(angle, 5);
-    float factor = forearmGrabAngle/backarmGrabAngle;
+    float factor = (180-forearmGrabAngle)/backarmGrabAngle;
     moveForearmAtSpeed(180 - angle*factor, 5); //forearmstarts at 180
   }
 

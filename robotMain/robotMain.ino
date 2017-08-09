@@ -59,8 +59,10 @@ void setup()
   RCServo1.write(180);
   delay(500);
   baseServo.write(0);  
-
-    stopMotors();
+  motor.speed(2, -255);
+  delay(3500);
+  motor.speed(2, 0);
+  stopMotors();
   Serial.begin(9600);
 
   enableExternalInterrupt(INT0, RISING);
@@ -72,10 +74,14 @@ void setup()
 void loop()
 { 
   //delay(2000);
-  pickUpAgentOne();
-  grabZiplineMechanismAndLift();
+  //reverse(200, 150);
+  //rotate(45);
+  //reverse(90, 130);
+  //delay(5000);
+  //pickUpAgentOne();
+  //grabZiplineMechanismAndLift();
  
-  //mainMenu();
+  mainMenu();
 //  for (int i = 0; i <6; i++)
 //  {
 //    servos[i].write(90);

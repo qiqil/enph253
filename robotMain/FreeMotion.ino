@@ -1,10 +1,11 @@
 //Encoder Based Movements
 const int eKd = 15; //8
-const int eKp = 10;
 const int eKi = 30;
 const int integralLimit = 60;
 const int stepSize = 1;
 const int MAX_SPEED = 255;
+
+void brake(int speed = MAX_SPEED, String dir = "FWD");
 
 void stopMotors (){
   motor.speed(0, 0);
@@ -25,14 +26,6 @@ void driveStraight(unsigned long distance, int speed){
     LCD.setCursor(7, 0); LCD.print(speed-control);
     LCD.setCursor(0, 1); LCD.print(right_rotations);
     LCD.setCursor(7, 1); LCD.print(speed+control);
-
-//    //trouble shooting POS
-//    char buffer [100];
-//    int output = sprintf(buffer, "Control is: %d, Integral is : %d", control, I);
-//    for(int i = 0; i <= output; i++){
-//      Serial.print(buffer[i]);
-//    }
-    Serial.println(integralControl);
  
     control = 0;
     if (left_rotations > right_rotations + stepSize) {
@@ -63,17 +56,70 @@ void driveStraight(unsigned long distance, int speed){
 }
 
 void reverse(unsigned long distance, int speed){
+  int prevControl = 0;
+  int control= 0;
+  int devCount = 0;
+  int integralControl = 0;
+
+  resetRotations();
   
+  while(left_rotations < distance || right_rotations < distance) {
+    LCD.clear(); LCD.home() ;
+    LCD.setCursor(0, 0); LCD.print(left_rotations);
+    LCD.setCursor(7, 0); LCD.print(speed-control);
+    LCD.setCursor(0, 1); LCD.print(right_rotations);
+    LCD.setCursor(7, 1); LCD.print(speed+control);
+ 
+    control = 0;
+    if (left_rotations > right_rotations + stepSize) {
+      control = -eKi;
+//      if (abs(control) >= abs(prevControl)) {integralControl++;}
+    } else if (left_rotations < right_rotations - stepSize) {
+      control = eKi;
+//      if(abs(control) >= abs(prevControl)) {integralControl--;} 
+    }
+//
+//    if(abs(integralControl) >= integralLimit) {integralControl = integralLimit * integralControl/abs(integralControl);}
+//    
+//    if (control == prevControl){devCount = 1;}
+//    else {devCount++;}
+//    
+////posterity, incorrect config, donot delete
+////    motor.speed(0, speed - control);
+////    motor.speed(1, speed + control);
+
+    control += devCount * eKd;
+    motor.speed(0, -speed + control); // right motor 
+    motor.speed(1, -speed - control); // left motor
+
+    prevControl = control;
+  }
+
+  stopMotors();
 }
 
-void brake(){
-  
+//Braking for constant time, write REV if reversing, else leave void
+//specify speed unless maxSpeed is desired
+void brake(int speed, String dir){
+  if (dir.equals("FWD")){
+    moveRightMotor(-speed);
+    moveLeftMotor(-speed);
+    delay(10);
+  }
+  else if (dir.equals("REV")){
+    moveRightMotor(speed);
+    moveLeftMotor(speed);
+    delay(10);
+  }
+
+  stopMotors();
 }
 
 //left wheel = 0, right wheel = 1
 //+ angle is CW
 void rotate(int angle){
   resetRotations();
+  stopMotors();
   
   if (angle == 0) return;
 

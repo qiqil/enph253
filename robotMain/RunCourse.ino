@@ -74,29 +74,38 @@ void tapeFollow()
     }
     if ((leftI > threshold) && (rightI > threshold) && (rightO > threshold) && (leftO < threshold) && (markcount > 6)) //three sensor see something, this is the circle start after looped around the tank
     {
-          motor.speed(0, currentSPEED*.4 + sharpLeftControl); //right motor (looking at tina)
-          motor.speed(1, currentSPEED*1.2 + sharpLeftControl);  //left motor
+      if(course == 0 || course == 1)
+      {
+        rotate(80);
+      }
+      else {
+        rotate(-80);
+      }
           delay(100);
           error = -2;
           SPEED = SPEED*.7;
     }
     if ((leftI > threshold) && (rightI > threshold) && (leftO > threshold) && (rightO < threshold) && (markcount > 6)) //three sensor see something, this is the circle start after looped around the tank
     {
-          motor.speed(0, -currentSPEED*.4 + sharpRightControl); //right motor (looking at tina)
-          motor.speed(1, -currentSPEED*1.2 + sharpRightControl);  //left motor
-          delay(100);
-          error = +2;
-          SPEED = SPEED*.7;
+      if(course == 0 || course == 1)
+      {
+        rotate(80);
+      }
+      else {
+        rotate(-80);
+      }
+      delay(100);
+      error = +2;
+      SPEED = SPEED*.7;
     }
     if ((leftI > threshold) && (rightI > threshold) && (rightO > threshold) && (leftO > threshold)) { //all sensor see something
       if (markcount == 0)
       {
-        hillIRDelayStart = millis();
+        driveStraight(30,200);
+        markcount++;
       }
-      if (millis() - hillIRDelayStart > 1000 && markcount != 0)
+      else
       {
-        LCD.clear(); LCD.home();
-        LCD.print(hillIRDelayStart); 
         error = +100; //100 means stop
         if (markcount > 6)
         {
@@ -112,13 +121,6 @@ void tapeFollow()
             delay(20);
           }
         }
-      }
-      else {
-        LCD.clear(); LCD.home();
-        LCD.print("HILL ERROR");        
-        markcount = 1;
-        error = 0;
-        delay(20);
       }
     }
 
@@ -140,8 +142,7 @@ void tapeFollow()
       gateCheck();
     }
 
-    if (count == 50)
-    {
+    if (count == 50){
       LCD.clear(); LCD.home();
       LCD.setCursor(0, 0); 
       LCD.print("1K ");
@@ -157,9 +158,9 @@ void tapeFollow()
       count = 0;
     }
     count = count + 1;
-
+    
     if (error != 100) {
-      motor.speed(0, -currentSPEED + control); //right motor (looking at tina)
+      motor.speed(0, currentSPEED - control); //right motor (looking at tina)
       motor.speed(1, currentSPEED + control);  //left motor
       lasterror = error;
     }
@@ -188,7 +189,7 @@ void tapeFollow()
 //        delay(100);
 //      }
       if (markcount > 0 && markcount <= 6) {
-        motor.speed(0, +200);
+        motor.speed(0, -200);
         motor.speed(1, -200);
         delay(20);
         q = 1;
@@ -233,24 +234,25 @@ void tapeFollow()
             lasterror = 3;
           }
         }
-        if (markcount == 2) pickUpAgentOne();
-        if (markcount == 3) pickUpAgentTwo();
-        if (markcount == 4) pickUpAgentThree();
-        if (markcount == 5) pickUpAgentFour();
-        if (markcount == 6) pickUpAgentFive();
-        if (markcount == 7) pickUpAgentSix();
+        if (markcount == 1) pickUpAgentOne();
+        if (markcount == 2) pickUpAgentTwo();
+        if (markcount == 3) pickUpAgentThree();
+        if (markcount == 4) pickUpAgentFour();
+        if (markcount == 5) pickUpAgentFive();
+        if (markcount == 6) {
+          pickUpAgentSix();
+          driveToZipline();
+        }
       }
-      if (markcount == 8) //can change, this is the mark we go to before we go to the zipline
-      {
-        LCD.clear(); LCD.home();
-        LCD.print("mark -> ");
-        LCD.print(markcount);
-        driveToZipline();
-        //hookZipline(); !!!!!!!!!!!!!!!!!!!!
-        delay(10000); //!!!!!!!!!!!!!!!!!
-      }
-      LCD.clear(); LCD.home();
-      LCD.print("HERE");
+//      if (markcount == 8) //can change, this is the mark we go to before we go to the zipline
+//      {
+//        LCD.clear(); LCD.home();
+//        LCD.print("mark -> ");
+//        LCD.print(markcount);
+//        driveToZipline();
+//        //hookZipline(); !!!!!!!!!!!!!!!!!!!!
+//        delay(10000); //!!!!!!!!!!!!!!!!!
+//      }
       markcount++;
     }
     //--------------------------------------------------------------------------------------------------------
@@ -258,7 +260,7 @@ void tapeFollow()
       gateCheck();
     }
   }
-
+}
 
 void gateCheck() {
   //irSensor1 = analogRead(4);
@@ -309,82 +311,26 @@ void driveToZipline() {
   LCD.print("Finding");
   LCD.setCursor(0,1);
   LCD.print("zipline");
+
+  reverse(200, 150);
   if (course == 1 || course == 0)
   {
-    motor.speed(0, -130);
-    motor.speed(1, 0);
-    LCD.clear(); LCD.home();
-    LCD.print("Correction");
-    LCD.setCursor(0,1);
-    LCD.print("left");
+    rotate(45);
     delay(300);
   }
   else
   {
-    motor.speed(0, 0);
-    motor.speed(1, +130);
-    LCD.clear(); LCD.home();
-    LCD.print("Correction");
-    LCD.setCursor(0,1);
-    LCD.print("right");
+    rotate(-45);
     delay(300);
   }
-  int inputButton =1; //change
-  float timeStart = millis();
-  float timeDrive = 3000;
-  motor.speed(0, -130);
-  motor.speed(1, +130);
-  LCD.clear(); LCD.home();
-  LCD.print("Forward");
-  while( (millis() - timeStart) < timeDrive ) {
-    if ((millis() - timeStart) > timeDrive-timeDrive*.2)
-    {
-      motor.speed(0, -110);
-      motor.speed(1, +110);
-    }
-//    if( digitalRead(inputButton) == HIGH ){
-//      break;
-//    }
-  }
-  motor.speed(0,0);
-  motor.speed(1,0);
+  
+  grabZiplineMechanismAndLift();
+  reverse(90, 130);
+  motor.speed(2, -255);
+  delay(openTime);
+  motor.speed(2, 0);
+  driveStraight(25, 130);
+  stopMotors();
+
 }
-
-void hookZipline()
-{
-  // grab mechanism -------
-  baseServo.write(100);
-  RCServo2.write(90);
-  delay(300);
-  RCServo0.write(100);
-  RCServo1.write(180-100);
-  motor.speed(2, 200);
-  delay(4000);
-  motor.speed(2, 50);
-  // ----------------------
-
-  if(course == 1 || course == 0)
-  {
-    RCServo2.write(180);
-    RCServo0.write(0);
-    RCServo1.write(180-0);
-    delay(200);
-    RCServo2.write(80);
-    delay(200);
-    baseServo.write(100);
-    delay(1000);
-  }
-  else
-  {
-    RCServo2.write(180);
-    RCServo0.write(0);
-    RCServo1.write(180-0);
-    delay(200);
-    RCServo2.write(80);
-    delay(200);
-    baseServo.write(80);
-    delay(1000);
-  }
-}
-
 
