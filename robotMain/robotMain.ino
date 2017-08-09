@@ -11,8 +11,8 @@ bool strategyIsSet = false;
 int course = 0; //0 = no course, 1 = right, 2 = left
 
 //tapeFollowing
-float kp = 30; //30
-float kd = 40; //40
+float kp = 40; //30
+float kd = 50; //40
 int threshold = 200; //tape following
 int gain = 1;
 int SPEED = 230; //200
