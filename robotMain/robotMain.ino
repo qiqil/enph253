@@ -72,10 +72,8 @@ void setup()
 void loop()
 { 
   //delay(2000);
-  pickUpAgentOne();
-  grabZiplineMechanismAndLift();
  
-  //mainMenu();
+  mainMenu();
 //  for (int i = 0; i <6; i++)
 //  {
 //    servos[i].write(90);

@@ -81,15 +81,15 @@ void brake(int speed, String dir){
 void rotate(int angle){
   resetRotations();
   stopMotors();
-  
+
   if (angle == 0) return;
 
-  int revCountMax = angle/3 + 0.5;
-  revCountMax = abs(revCountMax);
-  
-  LCD.clear(); LCD.home();
-  LCD.print(revCountMax);
+  int revCountMax = 0;
+
   if (angle > 0) {
+    revCountMax = angle/3 +0.5;
+    LCD.clear(); LCD.home();
+    LCD.print(revCountMax);
     while(abs(left_rotations) <= revCountMax || abs(right_rotations) <= revCountMax){
       moveRightMotor(-MAX_SPEED);
       moveLeftMotor(MAX_SPEED);
@@ -97,9 +97,15 @@ void rotate(int angle){
   }
 
   if (angle < 0) {
+    revCountMax = angle/3 -0.5;
+    revCountMax = abs(revCountMax);
+    LCD.clear(); LCD.home();
+    LCD.print(revCountMax);
     while(abs(left_rotations) <= revCountMax || abs(right_rotations) <= revCountMax){
       moveRightMotor(MAX_SPEED);
       moveLeftMotor(-MAX_SPEED);
+      Serial.println(right_rotations);
+      Serial.print(left_rotations);
     }
   }
   
@@ -112,10 +118,20 @@ void resetRotations(){
 }
 
 void moveRightMotor(int speed){
+  for(int currSpeed = 0; currSpeed <= speed; currSpeed++){
+    motor.speed(0, currSpeed);
+    delay(2);
+  }
+
   motor.speed(0, speed);
 }
 
 void moveLeftMotor(int speed){
-  motor.speed(1, speed);
+  for(int currSpeed = 0; currSpeed <= speed; currSpeed++){ 
+    motor.speed(1, speed);
+    delay(2);
+  }
+
+  motor.speed(0, speed);
 }
 

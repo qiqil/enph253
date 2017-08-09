@@ -258,6 +258,7 @@ void tapeFollow()
       gateCheck();
     }
   }
+}
 
 
 void gateCheck() {
