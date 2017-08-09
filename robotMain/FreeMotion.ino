@@ -6,6 +6,7 @@ const int stepSize = 1;
 const int MAX_SPEED = 255;
 
 void brake(int speed = MAX_SPEED, String dir = "FWD");
+void rotate(int angle = 0, int speed = MAX_SPEED);
 
 void stopMotors (){
   motor.speed(0, 0);
@@ -46,8 +47,8 @@ void driveStraight(unsigned long distance, int speed){
 ////    motor.speed(1, speed + control);
 
     control += devCount * eKd;
-    motor.speed(0, speed + control); // right motor 
-    motor.speed(1, speed - control); // left motor
+    moveRightMotor(speed + control); // right motor 
+    moveLeftMotor(speed - control); // left motor
 
     prevControl = control;
   }
@@ -78,7 +79,7 @@ void brake(int speed, String dir){
 
 //left wheel = 0, right wheel = 1
 //+ angle is CW
-void rotate(int angle){
+void rotate(int angle, int speed){
   resetRotations();
   stopMotors();
 
@@ -91,8 +92,8 @@ void rotate(int angle){
     LCD.clear(); LCD.home();
     LCD.print(revCountMax);
     while(abs(left_rotations) <= revCountMax || abs(right_rotations) <= revCountMax){
-      moveRightMotor(-MAX_SPEED);
-      moveLeftMotor(MAX_SPEED);
+      moveRightMotorRamp(-speed);
+      moveLeftMotorRamp(speed);
     }
   }
 
@@ -102,8 +103,8 @@ void rotate(int angle){
     LCD.clear(); LCD.home();
     LCD.print(revCountMax);
     while(abs(left_rotations) <= revCountMax || abs(right_rotations) <= revCountMax){
-      moveRightMotor(MAX_SPEED);
-      moveLeftMotor(-MAX_SPEED);
+      moveRightMotorRamp(speed);
+      moveLeftMotorRamp(-speed);
       Serial.println(right_rotations);
       Serial.print(left_rotations);
     }
@@ -112,26 +113,56 @@ void rotate(int angle){
   stopMotors();
 }
 
+//resets encoder counts
 void resetRotations(){
   left_rotations = 0;
   right_rotations = 0;
 }
 
+//instant motor speed change
 void moveRightMotor(int speed){
-  for(int currSpeed = 0; currSpeed <= speed; currSpeed++){
-    motor.speed(0, currSpeed);
-    delay(2);
-  }
-
   motor.speed(0, speed);
 }
 
 void moveLeftMotor(int speed){
-  for(int currSpeed = 0; currSpeed <= speed; currSpeed++){ 
-    motor.speed(1, speed);
-    delay(2);
+  motor.speed(1, speed);
+}
+
+//gradual motor speed change, minimizes slippage
+//use for high accuracy movements
+void moveRightMotorRamp(int speed){
+ if(speed == 0) {return;}
+  if(speed > 0){
+    for(int currSpeed = 0; currSpeed <= speed; currSpeed++){ 
+      motor.speed(0, speed);
+      delay(2);
+    }
   }
 
+  if(speed < 0){
+    for(int currSpeed = 0; currSpeed >= speed; currSpeed--){ 
+      motor.speed(0, speed);
+      delay(2);
+    }    
+  }
+  motor.speed(0, speed);
+}
+
+void moveLeftMotorRamp(int speed){
+  if(speed == 0) {return;}
+  if(speed > 0){
+    for(int currSpeed = 0; currSpeed <= speed; currSpeed++){ 
+      motor.speed(1, speed);
+      delay(2);
+    }
+  }
+
+  if(speed < 0){
+    for(int currSpeed = 0; currSpeed >= speed; currSpeed--){ 
+      motor.speed(1, speed);
+      delay(2);
+    }    
+  }
   motor.speed(0, speed);
 }
 

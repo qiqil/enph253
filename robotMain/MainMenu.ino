@@ -27,9 +27,9 @@ void mainMenu()
       {
         driveStraight(500, 150);
         delay(2000);
-        rotate(180);
+        rotate(180, 130);
         delay(2000);
-        rotate(-180);
+        rotate(-180, 130);
       
         //runCourse();
       }
