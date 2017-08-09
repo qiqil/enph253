@@ -106,6 +106,9 @@ void tapeFollow()
         LCD.clear(); LCD.home();
         LCD.print("CircleEntrance");
         stopMotors();
+        SPEED = 150;
+        kp = 30;
+        kd = 40;
         delay(100);
         markcount++;
         if(course == 1 || course == 0)
