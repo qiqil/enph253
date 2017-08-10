@@ -1,10 +1,10 @@
 float irSensor1 = 0;
 float irSensor10 = 0;
-int hillIRDelayStart = 0;
 
 void runCourse()
 {
-  pastGate = false;
+  pastGate = 0;
+  resetRotations();
   LCD.clear(); LCD.home();
   LCD.print("Tape Following");
   moveArmToStartPosition();
@@ -22,13 +22,13 @@ void tapeFollow()
   int recenterr = 0;
   int q = 1;
   int count = 0;
-  int markcount = 0; //CHANGE THIS LATER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  int sharpRightControl = 400;
-  int sharpLeftControl = -400;
+  int markcount = 0;
 
   while (digitalRead(49) == HIGH)
   {
-    if(pastGate == false) {
+    if(pastGate == 0 && right_rotations >= 200) {
+      stopMotors();
+      delay(20);
       gateCheck();
     }
     ki = 0;
@@ -72,6 +72,7 @@ void tapeFollow()
         currentSPEED = 0.9 * SPEED;
       }
     }
+    
 //    if ((leftI > threshold) && (rightI > threshold) && (rightO > threshold) && (leftO < threshold) && (markcount > 6)) //three sensor see something, this is the circle start after looped around the tank
 //    {
 //      stopMotors();
@@ -100,24 +101,25 @@ void tapeFollow()
 //      error = +2;
 //      SPEED = SPEED*.7;
 //    }
+
     if ((leftI > threshold) && (rightI > threshold) && (rightO > threshold) && (leftO > threshold)) { //all sensor see something
       if (markcount == 0)
       {
         LCD.clear(); LCD.home();
         LCD.print("CircleEntrance");
         stopMotors();
-        SPEED = 150;
+        SPEED = 160;
         kp = 30;
-        kd = 40;
+        kd = 45;
         delay(100);
         markcount++;
         if(course == 1 || course == 0)
         {
-          rotate(55, 130);
+          rotate(55, 140);
           error = -3;
         }
         else {
-          rotate(-55, 130);
+          rotate(-55, 140);
           error = +3;
         }
       }
@@ -152,14 +154,16 @@ void tapeFollow()
     P = kp * error;
     D = (int)(kd * (float)(error - recenterr) / (float)(q));
     I = 0;
-
-    control = gain * (P + D + I);
-
-    if(pastGate == false) {
+    
+    if(pastGate == 0 && right_rotations >= 200) {
+      stopMotors();
+      delay(20);
       gateCheck();
     }
+    
+    control = gain * (P + D + I);
 
-    if (count == 50){
+    if (count == 60){
       LCD.clear(); LCD.home();
       LCD.setCursor(0, 0); 
       LCD.print("1K ");
@@ -228,7 +232,7 @@ void tapeFollow()
         LCD.setCursor(0, 1);
         LCD.print("le -> ");
         LCD.print(lasterror);
-        delay(1000);
+        delay(500);
         if (markcount == 1)
         {
           if (course == 0 || course == 1)
@@ -251,13 +255,13 @@ void tapeFollow()
 //          }
 //        }
 
-        if (markcount == 1);//pickUpAgentOne();
-        if (markcount == 2);// pickUpAgentOne();
-        if (markcount == 3);// pickUpAgentOne();
-        if (markcount == 4);// pickUpAgentOne();
-        if (markcount == 5);// pickUpAgentOne();
+        if (markcount == 1) pickUpAgentOne();
+        if (markcount == 2) pickUpAgentOne();
+        if (markcount == 3) pickUpAgentOne();
+        if (markcount == 4) pickUpAgentOne();
+        if (markcount == 5) pickUpAgentOne();
         if (markcount == 6) {
-          //pickUpAgentOne();
+          pickUpAgentOne();
           driveToZipline();
         }
       }
@@ -273,7 +277,9 @@ void tapeFollow()
       markcount++;
     }
     //--------------------------------------------------------------------------------------------------------
-    if(pastGate == false) {
+    if(pastGate == 0 && right_rotations >= 200) {
+      stopMotors();
+      delay(20);
       gateCheck();
     }
   }
@@ -288,9 +294,8 @@ void gateCheck() {
     motor.speed(1, 0);
     LCD.clear(); LCD.home();
     LCD.print(irSensor10);
-    LCD.print(" ");
+    LCD.print("!!!!!");
     LCD.print(irSensor1);
-    //delay(2000);
 
     if ( (analogRead(5) >= tenkhzThresh) && (analogRead(4) < onekhzThresh)) {
       LCD.clear(); LCD.home();
@@ -299,23 +304,25 @@ void gateCheck() {
       while((analogRead(4) < onekhzThresh) && analogRead(5) >= tenkhzThresh)
       {
         delay(10);
-        pastGate = true;
+        pastGate++;
       }
    }
     else if ( (analogRead(5) < analogRead(4)) && (analogRead(4) >= onekhzThresh)) {
       LCD.clear(); LCD.home();
       LCD.print("1K ");
       LCD.print(analogRead(4));
+      int step1 = 0;
       while((analogRead(5) < analogRead(4)) && (analogRead(4) >= onekhzThresh))
       {
         delay(10);
-        pastGate = true;
+        step1++;
       }
       LCD.clear(); LCD.home();
       LCD.print("1");
-      delay(100);
-      while((analogRead(4) < onekhzThresh) && (analogRead(5) >= tenkhzThresh) && pastGate == true)
+      //delay(100);
+      while((analogRead(4) < onekhzThresh) && (analogRead(5) >= tenkhzThresh) && step1 != 0)
       {
+        pastGate++;
         delay(10);
       }
     } 
@@ -332,7 +339,7 @@ void driveToZipline() {
   delay(1000);
   if (course == 1 || course == 0)
   {
-    rotate(60, 150);
+    rotate(50, 150);
     delay(500);
   }
   else
@@ -354,7 +361,7 @@ void driveToZipline() {
     delay(300);
   }
   grabZiplineMechanismAndLift();
-  reverse(210, 130);
+  reverse(205, 130);
   motor.speed(2, -255);
   delay(openTime);
   motor.speed(2, 0);

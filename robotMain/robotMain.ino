@@ -11,14 +11,14 @@ bool strategyIsSet = false;
 int course = 0; //0 = no course, 1 = right, 2 = left
 
 //tapeFollowing
-float kp = 40; //30
-float kd = 50; //40
+float kp = 35; //30
+float kd = 55; //40
 int threshold = 200; //tape following
 int gain = 1;
-int SPEED = 230; //200
+int SPEED = 180; //200
 int currentSPEED = SPEED;
 int bounceCount = 24;
-bool pastGate = false; 
+int pastGate = 0; 
 float tenkhzThresh = 25; //change
 float onekhzThresh = 25; //change
 ServoTINAH baseServo;
@@ -59,9 +59,13 @@ void setup()
   RCServo1.write(180);
   delay(500);
   baseServo.write(0);  
-//  motor.speed(2, -255);
-//  delay(3500);
-//  motor.speed(2, 0);
+  motor.speed(2, 255);
+  delay(2300);
+  motor.speed(2, 50);
+  
+  motor.speed(2, -255);
+  delay(1800);
+  motor.speed(2, 0);
   stopMotors();
   Serial.begin(9600);
 
@@ -99,7 +103,7 @@ void loop()
 //    rotate(-45, 150);
 //    delay(300);
 //  }
-//  grabZiplineMechanismAndLift();
+  //grabZiplineMechanismAndLift();
 //  reverse(210, 130);
 //  LCD.clear(); LCD.home();
 //  LCD.print("done");

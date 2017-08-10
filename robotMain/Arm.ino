@@ -2,24 +2,26 @@
 // servo2 -forearm - 180pointing towards chassis
 // motor2 - end effector - 1.8sec to close, when close give it small speed to keep it closed
 // digital pin - base - 0 = pointing left facing TINAH
-int backarmRestAngle = 90;
-int baseRestAngle = 104;
-int rightCourseBasePickupAngle = 10;
-int leftCourseBasePickupAngle = 170;
-int closeTime = 3800;
-int openTime = 3800;
+int backarmRestAngle = 95;
+int baseRestAngle = 70;
+int rightCourseBasePickupAngle = 15;
+int firstAgentRightCourseBasePickupAngle = 0;
+int leftCourseBasePickupAngle = 172;
+int firstAgentLeftCourseBasePickupAngle = 160;
+int closeTime = 2300;
+int openTime = 2200;
 float backarmGrabAngle = 90;
-float forearmGrabAngle = 130;
+float forearmGrabAngle = 100;
 float backarmZiplineGrabAngle = 60;
 float forearmZiplineGrabAngle = 120;
 
 void moveArmToStartPosition()
 {
   RCServo2.write(0);
-  baseServo.write(80);
+  baseServo.write(baseRestAngle);
   delay(300);
-  RCServo0.write(100);
-  RCServo1.write(180-100);
+  RCServo0.write(backarmRestAngle);
+  RCServo1.write(180-backarmRestAngle);
 }
 
 void grabZiplineMechanismAndLift()
@@ -41,7 +43,7 @@ void grabZiplineMechanismAndLift()
   
     moveBackarmAtSpeed(0, 5);
     moveBaseAtSpeed(100, 10);
-    moveForearmAtSpeed(0, 5);
+    moveForearmAtSpeed(15, 5);
 }
 //------------------------------------------------------------------------
 void pickUpAgentOne() {
@@ -54,11 +56,11 @@ void pickUpAgentOne() {
   
   if (course == 0 || course == 1)
   {
-    moveBaseAtSpeed(rightCourseBasePickupAngle, 5);
+    moveBaseAtSpeed(firstAgentRightCourseBasePickupAngle, 5);
   }
   else
   {
-    moveBaseAtSpeed(leftCourseBasePickupAngle, 5);
+    moveBaseAtSpeed(firstAgentLeftCourseBasePickupAngle, 5);
   }
   delay(200);
 
