@@ -159,7 +159,7 @@ void tapeFollow()
     count = count + 1;
 
     if (error != 100) {
-      motor.speed(0, -currentSPEED + control); //right motor (looking at tina)
+      motor.speed(0, currentSPEED - control); //right motor (looking at tina)
       motor.speed(1, currentSPEED + control);  //left motor
       lasterror = error;
     }

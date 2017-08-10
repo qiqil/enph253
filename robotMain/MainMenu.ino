@@ -25,13 +25,13 @@ void mainMenu()
       while(digitalRead(50) == LOW){}
       if(select == 1)
       {
-        driveStraight(500, 150);
-        delay(2000);
-        rotate(180, 130);
-        delay(2000);
-        rotate(-180, 130);
-      
-        //runCourse();
+//        driveStraight(500, 150);
+//        delay(2000);
+//        rotate(180, 130);
+//        delay(2000);
+//        rotate(-180, 130);
+//      
+        runCourse();
       }
       else if(select == 2)
       {
