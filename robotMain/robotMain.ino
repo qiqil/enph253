@@ -12,7 +12,7 @@ int course = 0; //0 = no course, 1 = right, 2 = left
 
 //tapeFollowing
 float kp = 35; //30
-float kd = 55; //40
+float kd = 40; //40
 int threshold = 200; //tape following
 int gain = 1;
 int SPEED = 180; //200
@@ -60,7 +60,7 @@ void setup()
   delay(500);
   baseServo.write(0);  
   motor.speed(2, 255);
-  delay(2300);
+  delay(1800);
   motor.speed(2, 50);
   
   motor.speed(2, -255);
@@ -95,12 +95,12 @@ void loop()
 //  delay(500);
 //  if (course == 1 || course == 0)
 //  {
-//    rotate(45, 150);
+    //rotate(45, 150);
 //    delay(500);
 //  }
 //  else
 //  {
-//    rotate(-45, 150);
+    //rotate(-45, 150);
 //    delay(300);
 //  }
   //grabZiplineMechanismAndLift();

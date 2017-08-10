@@ -108,20 +108,24 @@ void tapeFollow()
         LCD.clear(); LCD.home();
         LCD.print("CircleEntrance");
         stopMotors();
-        SPEED = 160;
+        SPEED = 140;
         kp = 30;
         kd = 45;
         delay(100);
         markcount++;
+        reverse(7, 150);
+        stopMotors();
         if(course == 1 || course == 0)
         {
-          rotate(55, 140);
-          error = -3;
+          rotate(50, 140);
+          error = -4;
         }
         else {
-          rotate(-55, 140);
-          error = +3;
+          rotate(-50, 140);
+          error = +4;
         }
+
+        driveStraight(20, 130);
       }
       else
       {
@@ -344,7 +348,7 @@ void driveToZipline() {
   }
   else
   {
-    rotate(-70, 150);
+    rotate(-50, 150);
     delay(500);
   }
   
